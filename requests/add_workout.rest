@@ -1,0 +1,11 @@
+POST http://localhost:3001/api/workouts
+Content-Type: application/json
+
+{
+  "name": "testWorkout",
+  "exercises": [
+    "65cdda822d3f6e331e2eb6da",
+    "65d743e047bb64aeeb3116ed",
+    "65cf4a341e97026a1607979d"
+  ]
+}
