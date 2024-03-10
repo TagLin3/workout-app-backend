@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 /* eslint no-underscore-dangle: 0 */
 /* eslint no-param-reassign: 0 */
 
-const workoutSchema = new mongoose.Schema({
+const routineSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -15,7 +15,7 @@ const workoutSchema = new mongoose.Schema({
   },
 });
 
-workoutSchema.set("toJSON", {
+routineSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -23,4 +23,4 @@ workoutSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Workout", workoutSchema);
+module.exports = mongoose.model("Routine", routineSchema);

@@ -1,8 +1,7 @@
-POST http://localhost:3001/api/workouts
+POST http://localhost:3001/api/routines
 Content-Type: application/json
 
 {
-  "name": "testWorkout",
   "exercises": [
     "65ed75fc20580dd40a7ca9a2",
     "65ed762e20580dd40a7ca9a6"

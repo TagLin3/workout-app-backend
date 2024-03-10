@@ -3,8 +3,10 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 const logger = require("./utils/logger");
-const workoutRouter = require("./routes/workouts");
+const routineRouter = require("./routes/routines");
 const exerciseRouter = require("./routes/exercises");
+const setRouter = require("./routes/sets");
+const { errorHandler } = require("./utils/middleware");
 
 mongoose.connect(process.env.MONGODB_URI).then(() => logger.info("connected to MondoDB"))
   .catch((error) => logger.error(`error connecting to MongoDB: ${error.message}`));
@@ -12,7 +14,10 @@ mongoose.connect(process.env.MONGODB_URI).then(() => logger.info("connected to M
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/workouts", workoutRouter);
+app.use("/api/routines", routineRouter);
 app.use("/api/exercises", exerciseRouter);
+app.use("/api/sets", setRouter);
+
+app.use(errorHandler);
 
 module.exports = app;
