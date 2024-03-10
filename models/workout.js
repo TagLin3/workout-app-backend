@@ -7,9 +7,12 @@ const workoutSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  exercises: [{
-    type: mongoose.Schema.Types.ObjectId,
-  }],
+  exercises: {
+    type: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Exercise",
+    }],
+  },
 });
 
 workoutSchema.set("toJSON", {

@@ -1,0 +1,1 @@
+GET http://localhost:3001/api/workouts/65ed766fa289dea757de6cb0
