@@ -2,5 +2,5 @@ POST http://localhost:3001/api/exercises
 Content-Type: application/json
 
 {
-  "name": "testExercise2"
+  "name": "skullcrusher"
 }

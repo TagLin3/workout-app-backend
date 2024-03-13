@@ -7,12 +7,7 @@ setRouter.get("/", async (req, res) => {
 });
 
 setRouter.post("/", async (req, res) => {
-  const {
-    reps, weight, rest, note,
-  } = req.body;
-  const set = new Set({
-    reps, weight, rest, note,
-  });
+  const set = new Set(req.body);
   const savedSet = await set.save();
   return res.status(201).json(savedSet);
 });

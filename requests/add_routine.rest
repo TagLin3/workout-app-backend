@@ -2,8 +2,10 @@ POST http://localhost:3001/api/routines
 Content-Type: application/json
 
 {
+  "name": "push day",
   "exercises": [
-    "65ed75fc20580dd40a7ca9a2",
-    "65ed762e20580dd40a7ca9a6"
+    "65f184021d517d70c13023e1",
+    "65f1840b1d517d70c13023e3",
+    "65f184171d517d70c13023e5"
   ]
 }

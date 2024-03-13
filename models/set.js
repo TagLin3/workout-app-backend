@@ -15,13 +15,11 @@ const setSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  note: {
-    type: String,
-    required: false,
-  },
   workout: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+  },
+  note: {
+    type: String,
   },
   exercise: {
     type: mongoose.Schema.Types.ObjectId,
@@ -29,7 +27,7 @@ const setSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    required: true,
+    default: Date.now(),
   },
 });
 

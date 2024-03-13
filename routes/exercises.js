@@ -7,13 +7,7 @@ exerciseRouter.get("/", async (req, res) => {
 });
 
 exerciseRouter.post("/", async (req, res) => {
-  if (!req.body.name) {
-    return res.status(400)
-      .json({ error: "exercise name must be a nonempty string" });
-  }
-  const exercise = new Exercise({
-    name: req.body.name,
-  });
+  const exercise = new Exercise(req.body);
   const savedExercise = await exercise.save();
   return res.status(201).json(savedExercise);
 });

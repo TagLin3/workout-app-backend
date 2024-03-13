@@ -1,0 +1,6 @@
+POST http://localhost:3001/api/workouts
+Content-Type: application/json
+
+{
+  "routine": "65f184461d517d70c13023e8"
+}

@@ -1,6 +1,12 @@
+const logger = require("./logger");
+
 const errorHandler = (err, req, res, next) => {
-  console.log(err);
-  res.status(400).end();
+  if (err.name === "ValidationError") {
+    res.status(400).json({ error: err.message });
+  } else {
+    res.status(500).json({ error: "some unknown error occured" }).end();
+  }
+  next(err);
 };
 
 module.exports = { errorHandler };
