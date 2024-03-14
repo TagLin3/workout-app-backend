@@ -17,12 +17,14 @@ const setSchema = new mongoose.Schema({
   },
   workout: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "Workout",
   },
   note: {
     type: String,
   },
   exercise: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "Exercise",
     required: true,
   },
   date: {
