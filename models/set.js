@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 /* eslint no-param-reassign: 0 */
 
 const setSchema = new mongoose.Schema({
+  number: {
+    type: Number,
+    required: true,
+  },
   reps: {
     type: Number,
     required: true,

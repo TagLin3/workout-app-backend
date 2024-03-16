@@ -1,0 +1,21 @@
+POST http://localhost:3001/api/sets?saveMultiple
+Content-Type: application/json
+
+[
+  {
+    "number": 1,
+    "reps": 8,
+    "weight": 15,
+    "rest": 120,
+    "exercise": "65f184171d517d70c13023e5",
+    "workout": "65f5968bc0b3d5ccfa0b3ee2"
+  },
+  {
+    "number": 2,
+    "reps": 8,
+    "weight": 10,
+    "rest": 120,
+    "exercise": "65f184171d517d70c13023e5",
+    "workout": "65f5968bc0b3d5ccfa0b3ee2"
+  }
+]

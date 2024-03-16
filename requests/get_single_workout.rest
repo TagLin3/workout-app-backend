@@ -1,1 +1,1 @@
-GET http://localhost:3001/api/workouts/65f19044d18f6f38626496cd?includeSets&populateExercises
+GET http://localhost:3001/api/workouts/65f593c2bcde02aefe4e8105?includeSets&populateExercises
