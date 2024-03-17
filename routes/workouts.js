@@ -3,17 +3,19 @@ const Workout = require("../models/workout");
 const Set = require("../models/set");
 
 workoutRouter.get("/", async (req, res) => {
-  const workouts = await Workout.find({});
+  const workouts = await Workout.find({}).populate("routine");
   return res.json(workouts);
 });
 
 workoutRouter.get("/:id", async (req, res) => {
-  const workout = await Workout.findById(req.params.id);
+  const workout = await Workout.findById(req.params.id).populate({
+    path: "routine",
+    populate: req.query.includeExercises !== undefined
+      ? { path: "exercises" }
+      : undefined,
+  });
   if (req.query.includeSets !== undefined) {
     const sets = await Set.find({ workout: workout.id });
-    if (req.query.populateExercises !== undefined) {
-      await Set.populate(sets, "exercise");
-    }
     return res.json({
       ...workout.toJSON(),
       sets,
