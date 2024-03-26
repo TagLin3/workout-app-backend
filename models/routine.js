@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-/* eslint no-underscore-dangle: 0 */
 /* eslint no-param-reassign: 0 */
 
 const routineSchema = new mongoose.Schema({

@@ -1,20 +1,28 @@
 const mongoose = require("mongoose");
 /* eslint no-param-reassign: 0 */
 
-const exerciseSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+  passwordHash: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
   },
 });
 
-exerciseSchema.set("toJSON", {
+userSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id;
     delete returnedObject._id;
     delete returnedObject.__v;
-    return returnedObject;
+    delete returnedObject.passwordHash;
   },
 });
 
-module.exports = mongoose.model("Exercise", exerciseSchema);
+module.exports = mongoose.model("User", userSchema);
