@@ -17,9 +17,10 @@ loginRouter.post("/", async (req, res) => {
       error: "username or password incorrect",
     });
   }
-  const token = jwt.sign(userToLogIn.toJSON(), process.env.JWTKEY);
-  console.log(token);
-  return res.json({ success: "logged in" });
+  const token = jwt.sign(userToLogIn.toJSON(), process.env.JWT_SECRET, {
+    expiresIn: "20s",
+  });
+  return res.json({ token });
 });
 
 module.exports = loginRouter;

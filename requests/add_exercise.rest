@@ -1,6 +1,7 @@
 POST http://localhost:3001/api/exercises
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZSIsIm5hbWUiOiJ0ZXN0TmFtZSIsImlkIjoiNjYwMjVjZjk1NGUxMGI0Njg1MWE2M2RmIiwiaWF0IjoxNzExNTIzNTM1LCJleHAiOjE3MTE1NDM1MzV9.yXiTHGpIamt4VzmdBEQtNg3uwYZyqqfF-3hLt6fmPQM
 
 {
-  "name": "skullcrusher"
+  "name": "tokenExpiredNow?"
 }
