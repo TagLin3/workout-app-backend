@@ -19,10 +19,6 @@ const authorizer = (req, res, next) => {
   const pathsThatDontRequire = [{
     path: "/api/login",
     method: "POST",
-  },
-  {
-    path: "/api/exercises",
-    method: "GET",
   }];
   if (pathsThatDontRequire.some((path) => path.path === req.path && path.method === req.method)) {
     return next();
@@ -30,8 +26,7 @@ const authorizer = (req, res, next) => {
   const token = req.headers.authorization;
   if (token) {
     const user = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
-    console.log(user);
-    req.authorizationToken = user;
+    req.user = user;
     return next();
   }
   return res.status(401).set("WWW-Authenticate", "Bearer").json({ error: "authorization header missing" });
