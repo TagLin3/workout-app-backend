@@ -1,20 +1,37 @@
 const setRouter = require("express").Router();
 const Set = require("../models/set");
+const Workout = require("../models/workout");
+const Exercise = require("../models/exercise");
 
 setRouter.get("/", async (req, res) => {
-  const sets = await Set.find({});
+  let sets;
+  if (req.query.filterByExercise !== undefined) {
+    sets = await Set.find({ user: req.user.id, exercise: req.query.filterByExercise });
+  } else {
+    sets = await Set.find({ user: req.user.id });
+  }
+  if (req.query.populateExercises !== undefined) {
+    await Set.populate(sets, { path: "exercise" });
+  }
   return res.json(sets);
 });
 
 setRouter.post("/", async (req, res) => {
-  if (req.query.saveMultiple !== undefined) {
-    const savedSets = await Promise.all(req.body.map(async (set) => {
-      const setToSave = new Set(set);
-      return setToSave.save();
-    }));
-    return res.status(201).json(savedSets);
+  const workoutsAvailableToUser = await Workout
+    .find({ user: req.user.id });
+  const idsOfworkoutsAvailableToUser = workoutsAvailableToUser
+    .map((workout) => workout.toJSON().id);
+  const exercisesAvailableToUser = await Exercise
+    .find({ $or: [{ user: req.user.id }, { user: undefined }] });
+  const idsOfExercisesAvailableToUser = exercisesAvailableToUser
+    .map((exercise) => exercise.toJSON().id);
+  if (!idsOfworkoutsAvailableToUser.includes(req.body.workout)) {
+    return res.status(401).json({ error: "you do not have access to this workout" });
   }
-  const set = new Set(req.body);
+  if (!idsOfExercisesAvailableToUser.includes(req.body.exercise)) {
+    return res.status(401).json({ error: "you do not have access to this exercise" });
+  }
+  const set = new Set({ ...req.body, user: req.user.id });
   const savedSet = await set.save();
   return res.status(201).json(savedSet);
 });

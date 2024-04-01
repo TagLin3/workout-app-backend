@@ -8,8 +8,8 @@ routineRouter.get("/", async (req, res) => {
 });
 
 routineRouter.get("/:id", async (req, res) => {
-  const routine = await Routine.findById(req.params.id).populate("exercises");
-  if (!routine || routine.toJSON().user !== req.user.id) {
+  const routine = await Routine.findOne({ _id: req.params.id, user: req.user.id }).populate("exercises");
+  if (!routine) {
     return res.status(404).json({ error: "routine not found" });
   }
   return res.json(routine);
@@ -25,11 +25,7 @@ routineRouter.post("/", async (req, res) => {
   )) {
     return res.status(401).json({ error: "you do not have access to use one or more of the exercises" });
   }
-  const routine = new Routine({
-    name: req.body.name,
-    user: req.user.id,
-    exercises: req.body.exercises,
-  });
+  const routine = new Routine({ ...req.body, user: req.user.id });
   const savedRoutine = await routine.save();
   return res.status(201).json(savedRoutine);
 });

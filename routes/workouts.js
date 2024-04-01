@@ -1,19 +1,23 @@
 const workoutRouter = require("express").Router();
 const Workout = require("../models/workout");
 const Set = require("../models/set");
+const Routine = require("../models/routine");
 
 workoutRouter.get("/", async (req, res) => {
-  const workouts = await Workout.find({}).populate("routine");
+  const workouts = await Workout.find({ user: req.user.id }).populate("routine");
   return res.json(workouts);
 });
 
 workoutRouter.get("/:id", async (req, res) => {
-  const workout = await Workout.findById(req.params.id).populate({
+  const workout = await Workout.findOne({ _id: req.params.id, user: req.user.id }).populate({
     path: "routine",
     populate: req.query.includeExercises !== undefined
       ? { path: "exercises" }
       : undefined,
   });
+  if (!workout) {
+    return res.status(404).json({ error: "workout not found" });
+  }
   if (req.query.includeSets !== undefined) {
     const sets = await Set.find({ workout: workout.id });
     return res.json({
@@ -25,7 +29,16 @@ workoutRouter.get("/:id", async (req, res) => {
 });
 
 workoutRouter.post("/", async (req, res) => {
-  const workout = new Workout(req.body);
+  const routinesAvailableToUser = await Routine.find({ user: req.user.id });
+  const idsOfRoutinesAvailableToUser = routinesAvailableToUser
+    .map((routine) => routine.toJSON().id);
+  if (!idsOfRoutinesAvailableToUser.includes(req.body.routine)) {
+    return res.status(401).json({ error: "you do not have access to this routine" });
+  }
+  const workout = new Workout({
+    routine: req.body.routine,
+    user: req.user.id,
+  });
   const savedWorkout = await workout.save();
   return res.status(201).json(savedWorkout);
 });

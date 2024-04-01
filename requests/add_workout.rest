@@ -1,6 +1,8 @@
 POST http://localhost:3001/api/workouts
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZTIiLCJuYW1lIjoidGVzdE5hbWUyIiwiaWQiOiI2NjA1NTY5MmZkNTA4M2FlNDM3MzcwOWYiLCJpYXQiOjE3MTE5NTU3MzksImV4cCI6MTcxMTk5MTczOX0.VCpY8HyQttAqkMpBDdZz9ro3ZbVN4yAFRLq_uKrSgQM
+
 
 {
-  "routine": "65f184461d517d70c13023e8"
+  "routine": "660a5f621b174c3f70dcfb30"
 }

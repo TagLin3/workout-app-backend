@@ -1,11 +1,12 @@
 POST http://localhost:3001/api/routines
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZTIiLCJuYW1lIjoidGVzdE5hbWUyIiwiaWQiOiI2NjA1NTY5MmZkNTA4M2FlNDM3MzcwOWYiLCJpYXQiOjE3MTE2Mjc3MDgsImV4cCI6MTcxMTY2MzcwOH0.nGWyxaRHjqeLt-sSFG9mBbK-RFBMicK2w8oZIuEEfRo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZTIiLCJuYW1lIjoidGVzdE5hbWUyIiwiaWQiOiI2NjA1NTY5MmZkNTA4M2FlNDM3MzcwOWYiLCJpYXQiOjE3MTE5NTU3MzksImV4cCI6MTcxMTk5MTczOX0.VCpY8HyQttAqkMpBDdZz9ro3ZbVN4yAFRLq_uKrSgQM
 
 {
-  "name": "push day2",
+  "name": "push day",
   "exercises": [
     "65f184021d517d70c13023e1",
     "65f1840b1d517d70c13023e3",
+    "65f184171d517d70c13023e5"
   ]
 }
