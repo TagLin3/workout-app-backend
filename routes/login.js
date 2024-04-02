@@ -20,7 +20,7 @@ loginRouter.post("/", async (req, res) => {
   const token = jwt.sign(userToLogIn.toJSON(), process.env.JWT_SECRET, {
     expiresIn: "10h",
   });
-  return res.json({ token });
+  return res.json({ token, username, name: userToLogIn.name });
 });
 
 module.exports = loginRouter;
