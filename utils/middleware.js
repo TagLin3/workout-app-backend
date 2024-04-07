@@ -38,7 +38,7 @@ const authorizer = (req, res, next) => {
   ];
   if (
     pathsThatDontRequire.some(
-      (path) => path.path === req.path && path.method === req.method
+      (path) => path.path === req.path && path.method === req.method,
     )
   ) {
     return next();
@@ -47,7 +47,7 @@ const authorizer = (req, res, next) => {
   if (token) {
     const user = jwt.verify(
       token.replace("Bearer ", ""),
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
     );
     req.user = user;
     return next();
