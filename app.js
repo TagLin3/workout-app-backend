@@ -13,8 +13,10 @@ const userRouter = require("./routes/users");
 const loginRouter = require("./routes/login");
 const { errorHandler, authorizer } = require("./utils/middleware");
 
-mongoose.connect(process.env.MONGODB_URI).then(() => logger.info("connected to MondoDB"))
-  .catch((error) => logger.error(`error connecting to MongoDB: ${error.message}`));
+if (process.env.NODE_ENV === "development") {
+  mongoose.connect(process.env.MONGODB_URI).then(() => logger.info("connected to MondoDB"))
+    .catch((error) => logger.error(`error connecting to MongoDB: ${error.message}`));
+}
 
 app.use(express.json());
 app.use(cors());
