@@ -16,4 +16,16 @@ const initialUsers = [
   },
 ];
 
-module.exports = { initialUsers };
+const initialExercises = [
+  {
+    name: "exercise1",
+  },
+  {
+    name: "exercise2",
+  },
+  {
+    name: "exercise2",
+  },
+];
+
+module.exports = { initialUsers, initialExercises };

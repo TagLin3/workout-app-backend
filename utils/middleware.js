@@ -31,10 +31,6 @@ const authorizer = (req, res, next) => {
       path: "/api/users",
       method: "POST",
     },
-    {
-      path: "/api/users",
-      method: "GET",
-    },
   ];
   if (
     pathsThatDontRequire.some(
