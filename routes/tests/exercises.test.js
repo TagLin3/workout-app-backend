@@ -5,6 +5,7 @@ const app = require("../../app");
 const request = defaults(supertest(app));
 const Exercise = require("../../models/exercise");
 const testData = require("./testData");
+const testHelpers = require("./testHelpers");
 require("dotenv").config();
 
 beforeAll(async () => {
@@ -18,16 +19,12 @@ afterAll(async () => {
 describe("When there are exercises in the database", () => {
   beforeEach(async () => {
     await Exercise.deleteMany({});
-    const exercisesToSave = testData.initialExercises.map(
-      (exercise) => new Exercise(exercise),
-    );
-    await Promise.all(
-      exercisesToSave.map((exerciseToSave) => exerciseToSave.save()),
-    );
+    await testHelpers.addExercisesToDb(testData.initialExercises);
   });
   describe("When logged in", () => {
-    beforeAll(() => {
-      request.set("Authorization", `Bearer ${testData.token}`);
+    beforeAll(async () => {
+      const token = await testHelpers.addOneUserToDbAndGetToken(testData.initialUsers[0]);
+      request.set("Authorization", `Bearer ${token}`);
     });
     it("exercises are returned by a GET request to /api/exercises", async () => {
       const res = await request

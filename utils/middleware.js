@@ -21,7 +21,7 @@ const errorHandler = (err, req, res, next) => {
   next(err);
 };
 
-const authorizer = (req, res, next) => {
+const authorizer = async (req, res, next) => {
   const pathsThatDontRequire = [
     {
       path: "/api/login",

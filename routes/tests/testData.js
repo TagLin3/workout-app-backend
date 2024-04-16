@@ -1,5 +1,4 @@
 require("dotenv").config();
-const jwt = require("jsonwebtoken");
 
 const initialUsers = [
   {
@@ -27,17 +26,32 @@ const initialExercises = [
     name: "exercise2",
   },
   {
-    name: "exercise2",
+    name: "exercise3",
+  },
+  {
+    name: "exercise4",
+  },
+  {
+    name: "exercise5",
+  },
+  {
+    name: "exercise6",
+  },
+  {
+    name: "exercise7",
+  },
+  {
+    name: "exercise8",
+  },
+  {
+    name: "exercise9",
   },
 ];
 
-const initialRoutineName = "routine1";
-
-const token = jwt.sign({
-  name: initialUsers.map((user) => user.name)[0],
-  username: initialUsers.map((user) => user.username)[0],
-}, process.env.JWT_SECRET);
+const initialRoutineNames = [
+  "routine1", "routine2", "routine3",
+];
 
 module.exports = {
-  initialUsers, initialExercises, token, initialRoutineName,
+  initialUsers, initialExercises, initialRoutineNames,
 };

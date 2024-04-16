@@ -5,6 +5,7 @@ const defaults = require("superagent-defaults");
 const app = require("../../app");
 const User = require("../../models/user");
 const testData = require("./testData");
+const testHelpers = require("./testHelpers");
 const request = defaults(supertest(app));
 
 beforeAll(async () => {
@@ -22,8 +23,9 @@ describe("When there are users in the database", () => {
     await Promise.all(usersToSave.map((user) => user.save()));
   });
   describe("When logged in", () => {
-    beforeAll(() => {
-      request.set("Authorization", `Bearer ${testData.token}`);
+    beforeAll(async () => {
+      const token = await testHelpers.getTokenFromFirstUserInDb();
+      request.set("Authorization", `Bearer ${token}`);
     });
     it("users are returned by a GET request to /api/users", async () => {
       const res = await request
