@@ -1,4 +1,5 @@
 require("dotenv").config();
+const _ = require("lodash");
 
 const initialUsers = [
   {
@@ -17,6 +18,8 @@ const initialUsers = [
     passwordHash: "$2a$10$sMi8jT9g0UOBfd4EJBfiJuA0t5s4PA9RmGJO3QDamekiqzjAop7y.",
   },
 ];
+
+const userToOwnRoutines = initialUsers[0];
 
 const initialExercises = [
   {
@@ -48,10 +51,28 @@ const initialExercises = [
   },
 ];
 
-const initialRoutineNames = [
-  "routine1", "routine2", "routine3",
+const numberOfRoutines = 3;
+
+const numberOfExercisesInEachRoutine = Math.floor(
+  initialExercises.length / numberOfRoutines,
+);
+const exercisesForEachRoutine = _.chunk(initialExercises, numberOfExercisesInEachRoutine);
+
+const initialRoutines = [
+  {
+    name: "routine1",
+    exercises: exercisesForEachRoutine[0],
+  },
+  {
+    name: "routine2",
+    exercises: exercisesForEachRoutine[1],
+  },
+  {
+    name: "routine3",
+    exercises: exercisesForEachRoutine[2],
+  },
 ];
 
 module.exports = {
-  initialUsers, initialExercises, initialRoutineNames,
+  userToOwnRoutines, initialExercises, initialRoutines, initialUsers,
 };

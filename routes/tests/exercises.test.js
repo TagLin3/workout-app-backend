@@ -16,25 +16,26 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-describe("When there are exercises in the database", () => {
+describe("When there are anonymous exercises in the database", () => {
   beforeEach(async () => {
     await Exercise.deleteMany({});
-    await testHelpers.addExercisesToDb(testData.initialExercises);
+    await testHelpers.addAnonymousExercisesToDb(testData.initialExercises);
   });
   describe("When logged in", () => {
     beforeAll(async () => {
       const token = await testHelpers.addOneUserToDbAndGetToken(testData.initialUsers[0]);
       request.set("Authorization", `Bearer ${token}`);
     });
-    it("exercises are returned by a GET request to /api/exercises", async () => {
+    it("all anonymous exercises are returned by a GET request to /api/exercises", async () => {
       const res = await request
         .get("/api/exercises")
         .expect(200);
       const returnedExercises = res.body
-        .map((returnedExercise) => ({ name: returnedExercise.name }));
+        .map((returnedExercise) => ({ name: returnedExercise.name }))
+        .toSorted((a, b) => a.name.localeCompare(b.name));
       expect(returnedExercises).toEqual(testData.initialExercises);
     });
-    it("an exercise is added by a POST request to /api/exercises", async () => {
+    it("an anonymous exercise can added by a POST request to /api/exercises", async () => {
       await request
         .post("/api/exercises")
         .send({

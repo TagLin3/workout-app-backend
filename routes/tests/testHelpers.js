@@ -22,7 +22,7 @@ const getTokenFromFirstUserInDb = async () => {
   return token;
 };
 
-const addExercisesToDb = async (exercisesToAdd) => {
+const addAnonymousExercisesToDb = async (exercisesToAdd) => {
   const exercisesToSave = exercisesToAdd.map(
     (exercise) => new Exercise(exercise),
   );
@@ -31,9 +31,8 @@ const addExercisesToDb = async (exercisesToAdd) => {
   );
 };
 
-const addRoutinesToDb = async (namesOfRoutinesToAdd) => {
-  const usersInDb = await User.find({});
-  const firstUserInDb = usersInDb.toSorted()[0];
+const addRoutinesToDb = async (namesOfRoutinesToAdd, userToOwnRoutines) => {
+  const owner = await User.findOne({ username: userToOwnRoutines.username });
   const availableExercises = (await Exercise.find({})).toSorted();
   const idsOfAvailableExercises = availableExercises.map((exercise) => exercise.id);
   const numberOfAvailableExercises = availableExercises.length;
@@ -41,16 +40,14 @@ const addRoutinesToDb = async (namesOfRoutinesToAdd) => {
     numberOfAvailableExercises / namesOfRoutinesToAdd.length,
   );
   const exercisesForEachRoutine = _.chunk(idsOfAvailableExercises, numberOfExercisesInEachRoutine);
-  console.log(exercisesForEachRoutine);
   const routinesToSave = namesOfRoutinesToAdd.map((nameOfRoutine, index) => new Routine({
     name: nameOfRoutine,
     exercises: exercisesForEachRoutine[index],
-    user: firstUserInDb.id,
+    user: owner.id,
   }));
   await Promise.all(routinesToSave.map((routineToSave) => routineToSave.save()));
-  console.log(await Routine.find({}).populate("exercises"));
 };
 
 module.exports = {
-  addOneUserToDbAndGetToken, addExercisesToDb, getTokenFromFirstUserInDb, addRoutinesToDb,
+  addOneUserToDbAndGetToken, addAnonymousExercisesToDb, getTokenFromFirstUserInDb, addRoutinesToDb,
 };
