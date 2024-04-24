@@ -19,9 +19,7 @@ const initialUsers = [
   },
 ];
 
-const userToOwnRoutines = initialUsers[0];
-
-const initialExercises = [
+const initialAnonymousExercises = [
   {
     name: "exercise1",
   },
@@ -51,12 +49,30 @@ const initialExercises = [
   },
 ];
 
+const initialUserExercisesForUser1 = [
+  {
+    name: "user1Exercise1",
+  },
+  {
+    name: "user1Exercise2",
+  },
+];
+
+const initialUserExercisesForUser2 = [
+  {
+    name: "user2Exercise1",
+  },
+  {
+    name: "user2Exercise2",
+  },
+];
+
 const numberOfRoutines = 3;
 
 const numberOfExercisesInEachRoutine = Math.floor(
-  initialExercises.length / numberOfRoutines,
+  initialAnonymousExercises.length / numberOfRoutines,
 );
-const exercisesForEachRoutine = _.chunk(initialExercises, numberOfExercisesInEachRoutine);
+const exercisesForEachRoutine = _.chunk(initialAnonymousExercises, numberOfExercisesInEachRoutine);
 
 const initialRoutines = [
   {
@@ -74,5 +90,9 @@ const initialRoutines = [
 ];
 
 module.exports = {
-  userToOwnRoutines, initialExercises, initialRoutines, initialUsers,
+  initialAnonymousExercises,
+  initialRoutines,
+  initialUsers,
+  initialUserExercisesForUser1,
+  initialUserExercisesForUser2,
 };

@@ -18,19 +18,22 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-describe("When there are routines, anonymous exercises and a user in the database", () => {
+describe("When there are a user, anonymous exercises and routines in the database", () => {
   let tokenOfRoutineOwner;
+  const userToOwnRoutines = testData.initialUsers[0];
   beforeAll(async () => {
     await Exercise.deleteMany({});
     await User.deleteMany({});
-    await testHelpers.addAnonymousExercisesToDb(testData.initialExercises);
-    tokenOfRoutineOwner = await testHelpers.addOneUserToDbAndGetToken(testData.userToOwnRoutines);
+    await testHelpers.addAnonymousExercisesToDb(testData.initialAnonymousExercises);
+    [tokenOfRoutineOwner] = await testHelpers.addUsersToDbAndGetTokens(
+      [userToOwnRoutines],
+    );
   });
   beforeEach(async () => {
     await Routine.deleteMany({});
     await testHelpers.addRoutinesToDb(
       testData.initialRoutines.map((routine) => routine.name),
-      testData.userToOwnRoutines,
+      userToOwnRoutines,
     );
   });
   describe("When logged in", () => {

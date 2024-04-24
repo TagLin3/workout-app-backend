@@ -6,6 +6,7 @@ const request = defaults(supertest(app));
 const Exercise = require("../../models/exercise");
 const testData = require("./testData");
 const testHelpers = require("./testHelpers");
+const User = require("../../models/user");
 require("dotenv").config();
 
 beforeAll(async () => {
@@ -19,11 +20,11 @@ afterAll(async () => {
 describe("When there are anonymous exercises in the database", () => {
   beforeEach(async () => {
     await Exercise.deleteMany({});
-    await testHelpers.addAnonymousExercisesToDb(testData.initialExercises);
+    await testHelpers.addAnonymousExercisesToDb(testData.initialAnonymousExercises);
   });
   describe("When logged in", () => {
     beforeAll(async () => {
-      const token = await testHelpers.addOneUserToDbAndGetToken(testData.initialUsers[0]);
+      const [token] = await testHelpers.addUsersToDbAndGetTokens([testData.initialUsers[0]]);
       request.set("Authorization", `Bearer ${token}`);
     });
     it("all anonymous exercises are returned by a GET request to /api/exercises", async () => {
@@ -33,9 +34,9 @@ describe("When there are anonymous exercises in the database", () => {
       const returnedExercises = res.body
         .map((returnedExercise) => ({ name: returnedExercise.name }))
         .toSorted((a, b) => a.name.localeCompare(b.name));
-      expect(returnedExercises).toEqual(testData.initialExercises);
+      expect(returnedExercises).toEqual(testData.initialAnonymousExercises);
     });
-    it("an anonymous exercise can added by a POST request to /api/exercises", async () => {
+    it("a user exercise can added by a POST request to /api/exercises", async () => {
       await request
         .post("/api/exercises")
         .send({
@@ -43,7 +44,7 @@ describe("When there are anonymous exercises in the database", () => {
         })
         .expect(201);
       const exercisesInDb = await Exercise.find({});
-      expect(exercisesInDb.length).toBe(testData.initialExercises.length + 1);
+      expect(exercisesInDb.length).toBe(testData.initialAnonymousExercises.length + 1);
     });
   });
   describe("When not logged in", () => {
@@ -59,6 +60,47 @@ describe("When there are anonymous exercises in the database", () => {
       await request
         .post("/api/exercises")
         .expect(401);
+    });
+  });
+});
+describe("When there are users and user exercises in the database", () => {
+  let tokens;
+  beforeAll(async () => {
+    await User.deleteMany({});
+    tokens = await testHelpers.addUsersToDbAndGetTokens(testData.initialUsers.slice(0, 2));
+  });
+  beforeEach(async () => {
+    await Exercise.deleteMany({});
+    await testHelpers.addUserExercisesToDb(
+      testData.initialUserExercisesForUser1,
+      testData.initialUsers[0],
+    );
+    await testHelpers.addUserExercisesToDb(
+      testData.initialUserExercisesForUser2,
+      testData.initialUsers[1],
+    );
+  });
+  describe("When logged in", () => {
+    beforeAll(async () => {
+      request.set("Authorization", `Bearer ${tokens[0]}`);
+    });
+    it("a GET request to /api/exercises returns the exercises for the logged in user", async () => {
+      const res = await request
+        .get("/api/exercises")
+        .expect(200);
+      const returnedExercises = res.body
+        .map((returnedExercise) => ({ name: returnedExercise.name }));
+      expect(returnedExercises).toContainEqual(testData.initialUserExercisesForUser1[0]);
+      expect(returnedExercises).toContainEqual(testData.initialUserExercisesForUser1[1]);
+    });
+    it("a GET request to /api/exercises doesn't return the exercises for other users", async () => {
+      const res = await request
+        .get("/api/exercises")
+        .expect(200);
+      const returnedExercises = res.body
+        .map((returnedExercise) => ({ name: returnedExercise.name }));
+      expect(returnedExercises).not.toContainEqual(testData.initialUserExercisesForUser2[0]);
+      expect(returnedExercises).not.toContainEqual(testData.initialUserExercisesForUser2[1]);
     });
   });
 });

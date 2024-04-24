@@ -19,8 +19,7 @@ afterAll(async () => {
 describe("When there are users in the database", () => {
   beforeEach(async () => {
     await User.deleteMany({});
-    const usersToSave = testData.initialUsers.map((user) => new User(user));
-    await Promise.all(usersToSave.map((user) => user.save()));
+    await testHelpers.addUsersToDbAndGetTokens(testData.initialUsers);
   });
   describe("When logged in", () => {
     beforeAll(async () => {

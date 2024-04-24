@@ -5,13 +5,13 @@ const User = require("../../models/user");
 const Exercise = require("../../models/exercise");
 const Routine = require("../../models/routine");
 
-const addOneUserToDbAndGetToken = async (userToAdd) => {
-  const userToSave = new User(userToAdd);
-  const savedUser = await userToSave.save();
-  const token = jwt.sign(savedUser.toJSON(), process.env.JWT_SECRET, {
+const addUsersToDbAndGetTokens = async (usersToAdd) => {
+  const usersToSave = usersToAdd.map((user) => new User(user));
+  const savedUsers = await Promise.all(usersToSave.map((user) => user.save()));
+  const tokens = savedUsers.map((user) => jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
     expiresIn: "10h",
-  });
-  return token;
+  }));
+  return tokens;
 };
 
 const getTokenFromFirstUserInDb = async () => {
@@ -25,6 +25,19 @@ const getTokenFromFirstUserInDb = async () => {
 const addAnonymousExercisesToDb = async (exercisesToAdd) => {
   const exercisesToSave = exercisesToAdd.map(
     (exercise) => new Exercise(exercise),
+  );
+  await Promise.all(
+    exercisesToSave.map((exerciseToSave) => exerciseToSave.save()),
+  );
+};
+
+const addUserExercisesToDb = async (exercisesToAdd, userToOwnExercises) => {
+  const owner = await User.findOne({ username: userToOwnExercises.username });
+  const exercisesToSave = exercisesToAdd.map(
+    (exercise) => new Exercise({
+      ...exercise,
+      user: owner.id,
+    }),
   );
   await Promise.all(
     exercisesToSave.map((exerciseToSave) => exerciseToSave.save()),
@@ -49,5 +62,9 @@ const addRoutinesToDb = async (namesOfRoutinesToAdd, userToOwnRoutines) => {
 };
 
 module.exports = {
-  addOneUserToDbAndGetToken, addAnonymousExercisesToDb, getTokenFromFirstUserInDb, addRoutinesToDb,
+  addUsersToDbAndGetTokens,
+  addAnonymousExercisesToDb,
+  getTokenFromFirstUserInDb,
+  addRoutinesToDb,
+  addUserExercisesToDb,
 };
