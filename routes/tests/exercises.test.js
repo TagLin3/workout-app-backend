@@ -80,7 +80,7 @@ describe("When there are users and user exercises in the database", () => {
       testData.initialUsers[1],
     );
   });
-  describe("When logged in", () => {
+  describe("When logged in as the owner of some of the exercises", () => {
     beforeAll(async () => {
       request.set("Authorization", `Bearer ${tokens[0]}`);
     });

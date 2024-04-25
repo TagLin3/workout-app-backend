@@ -44,15 +44,13 @@ const addUserExercisesToDb = async (exercisesToAdd, userToOwnExercises) => {
   );
 };
 
-const addRoutinesToDb = async (namesOfRoutinesToAdd, userToOwnRoutines) => {
+const addRoutinesToDb = async (namesOfRoutinesToAdd, exerciseIds, userToOwnRoutines) => {
   const owner = await User.findOne({ username: userToOwnRoutines.username });
-  const availableExercises = (await Exercise.find({})).toSorted();
-  const idsOfAvailableExercises = availableExercises.map((exercise) => exercise.id);
-  const numberOfAvailableExercises = availableExercises.length;
+  const numberOfAvailableExercises = exerciseIds.length;
   const numberOfExercisesInEachRoutine = Math.floor(
     numberOfAvailableExercises / namesOfRoutinesToAdd.length,
   );
-  const exercisesForEachRoutine = _.chunk(idsOfAvailableExercises, numberOfExercisesInEachRoutine);
+  const exercisesForEachRoutine = _.chunk(exerciseIds, numberOfExercisesInEachRoutine);
   const routinesToSave = namesOfRoutinesToAdd.map((nameOfRoutine, index) => new Routine({
     name: nameOfRoutine,
     exercises: exercisesForEachRoutine[index],
