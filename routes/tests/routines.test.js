@@ -18,46 +18,37 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-describe("When there are a user, anonymous exercises and routines in the database", () => {
+describe("When there are users, anonymous exercises and routines in the database", () => {
   let tokenOfRoutineOwner;
-  const userToOwnRoutines = testData.initialUsers[0];
-  const userToOwnLastRoutine = testData.initialUsers[1];
   beforeAll(async () => {
     await Exercise.deleteMany({});
     await User.deleteMany({});
     await testHelpers.addAnonymousExercisesToDb(testData.initialAnonymousExercises);
     [tokenOfRoutineOwner] = await testHelpers.addUsersToDbAndGetTokens(
-      [userToOwnRoutines, userToOwnLastRoutine],
+      testData.initialUsers.slice(0, 2),
     );
   });
   beforeEach(async () => {
     await Routine.deleteMany({});
-    const exercisesForUser1 = await Promise.all(
-      testData.initialAnonymousExercises.slice(0, 6)
-        .map((exercise) => Exercise.findOne({ name: exercise.name })),
+    const exerciseIds = await testHelpers.getIdsOfExercisesInDbByNames(
+      testData.initialAnonymousExercises.slice(0, 6).map((exercise) => exercise.name),
     );
-    const exerciseIdsForUser1 = exercisesForUser1.map((exercise) => exercise.id);
-    const exercisesForUser2 = await Promise.all(
-      testData.initialAnonymousExercises.slice(6, 10)
-        .map((exercise) => Exercise.findOne({ name: exercise.name })),
-    );
-    const exerciseIdsForUser2 = exercisesForUser2.map((exercise) => exercise.id);
     await testHelpers.addRoutinesToDb(
       testData.initialRoutines.slice(0, 2).map((routine) => routine.name),
-      exerciseIdsForUser1,
-      userToOwnRoutines,
+      exerciseIds.slice(0, 6),
+      testData.initialUsers[0].username,
     );
     await testHelpers.addRoutinesToDb(
       [testData.initialRoutines[2].name],
-      exerciseIdsForUser2,
-      userToOwnLastRoutine,
+      exerciseIds.slice(6, 10),
+      testData.initialUsers[1].username,
     );
   });
   describe("When logged in as the owner of some of the routines", () => {
     beforeAll(() => {
       request.set("Authorization", `Bearer ${tokenOfRoutineOwner}`);
     });
-    it("a GET request to /api/routines returns the routines owned by the user", async () => {
+    it("a GET request to /api/routines returns the routines owned by the user but not any routines owned by another user", async () => {
       const res = await request
         .get("/api/routines")
         .expect(200);
@@ -70,7 +61,9 @@ describe("When there are a user, anonymous exercises and routines in the databas
           };
         })
         .toSorted((a, b) => a.name.localeCompare(b.name));
-      expect(recievedRoutines).toEqual(testData.initialRoutines.slice(0, 2));
+      expect(recievedRoutines).toContainEqual(testData.initialRoutines[0]);
+      expect(recievedRoutines).toContainEqual(testData.initialRoutines[1]);
+      expect(recievedRoutines).not.toContainEqual(testData.initialRoutines[2]);
     });
     it("a routine is added by a POST request to /api/routines", async () => {
       const exercisesInDb = await Exercise.find({});

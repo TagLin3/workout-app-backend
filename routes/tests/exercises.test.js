@@ -84,7 +84,7 @@ describe("When there are users and user exercises in the database", () => {
     beforeAll(async () => {
       request.set("Authorization", `Bearer ${tokens[0]}`);
     });
-    it("a GET request to /api/exercises returns the exercises for the logged in user", async () => {
+    it("a GET request to /api/exercises returns the exercises for the logged in user but not the exercises for another user", async () => {
       const res = await request
         .get("/api/exercises")
         .expect(200);
@@ -92,13 +92,6 @@ describe("When there are users and user exercises in the database", () => {
         .map((returnedExercise) => ({ name: returnedExercise.name }));
       expect(returnedExercises).toContainEqual(testData.initialUserExercisesForUser1[0]);
       expect(returnedExercises).toContainEqual(testData.initialUserExercisesForUser1[1]);
-    });
-    it("a GET request to /api/exercises doesn't return the exercises for other users", async () => {
-      const res = await request
-        .get("/api/exercises")
-        .expect(200);
-      const returnedExercises = res.body
-        .map((returnedExercise) => ({ name: returnedExercise.name }));
       expect(returnedExercises).not.toContainEqual(testData.initialUserExercisesForUser2[0]);
       expect(returnedExercises).not.toContainEqual(testData.initialUserExercisesForUser2[1]);
     });

@@ -4,6 +4,7 @@ const _ = require("lodash");
 const User = require("../../models/user");
 const Exercise = require("../../models/exercise");
 const Routine = require("../../models/routine");
+const Workout = require("../../models/workout");
 
 const addUsersToDbAndGetTokens = async (usersToAdd) => {
   const usersToSave = usersToAdd.map((user) => new User(user));
@@ -44,8 +45,15 @@ const addUserExercisesToDb = async (exercisesToAdd, userToOwnExercises) => {
   );
 };
 
-const addRoutinesToDb = async (namesOfRoutinesToAdd, exerciseIds, userToOwnRoutines) => {
-  const owner = await User.findOne({ username: userToOwnRoutines.username });
+const getIdsOfExercisesInDbByNames = async (exerciseNames) => {
+  const foundExercises = await Promise.all(
+    exerciseNames.map((name) => Exercise.findOne({ name })),
+  );
+  return foundExercises.map((exercise) => exercise.id);
+};
+
+const addRoutinesToDb = async (namesOfRoutinesToAdd, exerciseIds, usernameToOwnRoutines) => {
+  const owner = await User.findOne({ username: usernameToOwnRoutines });
   const numberOfAvailableExercises = exerciseIds.length;
   const numberOfExercisesInEachRoutine = Math.floor(
     numberOfAvailableExercises / namesOfRoutinesToAdd.length,
@@ -59,10 +67,22 @@ const addRoutinesToDb = async (namesOfRoutinesToAdd, exerciseIds, userToOwnRouti
   await Promise.all(routinesToSave.map((routineToSave) => routineToSave.save()));
 };
 
+const addWorkoutsToDb = async (numberOfWorkouts, routineName, usernameToOwnWorkouts) => {
+  const owner = await User.findOne({ username: usernameToOwnWorkouts });
+  const routine = await Routine.findOne({ name: routineName });
+  const workoutsToSave = Array(numberOfWorkouts).fill(null).map(() => new Workout({
+    routine: routine.id,
+    user: owner.id,
+  }));
+  await Promise.all(workoutsToSave.map((workout) => workout.save()));
+};
+
 module.exports = {
   addUsersToDbAndGetTokens,
   addAnonymousExercisesToDb,
   getTokenFromFirstUserInDb,
   addRoutinesToDb,
   addUserExercisesToDb,
+  getIdsOfExercisesInDbByNames,
+  addWorkoutsToDb,
 };
