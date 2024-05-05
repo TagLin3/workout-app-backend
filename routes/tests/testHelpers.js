@@ -2,6 +2,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const User = require("../../models/user");
+const Set = require("../../models/set");
 const Exercise = require("../../models/exercise");
 const Routine = require("../../models/routine");
 const Workout = require("../../models/workout");
@@ -52,6 +53,12 @@ const getIdsOfExercisesInDbByNames = async (exerciseNames) => {
   return foundExercises.map((exercise) => exercise.id);
 };
 
+const getUserByJwtToken = async (token) => {
+  const decodedUser = jwt.decode(token);
+  const foundUser = await User.findOne({ username: decodedUser.username });
+  return foundUser;
+};
+
 const addRoutinesToDb = async (namesOfRoutinesToAdd, exerciseIds, usernameToOwnRoutines) => {
   const owner = await User.findOne({ username: usernameToOwnRoutines });
   const numberOfAvailableExercises = exerciseIds.length;
@@ -77,6 +84,30 @@ const addWorkoutsToDb = async (numberOfWorkouts, routineName, usernameToOwnWorko
   await Promise.all(workoutsToSave.map((workout) => workout.save()));
 };
 
+const addSetToDb = async (
+  number,
+  reps,
+  weight,
+  rest,
+  usernameToOwnSet,
+  workoutOfSet,
+  note,
+  exercise,
+) => {
+  const owner = await User.findOne({ username: usernameToOwnSet });
+  const setToAdd = new Set({
+    number,
+    reps,
+    weight,
+    rest,
+    workout: workoutOfSet,
+    user: owner.id,
+    note,
+    exercise: exercise.id,
+  });
+  await setToAdd.save();
+};
+
 module.exports = {
   addUsersToDbAndGetTokens,
   addAnonymousExercisesToDb,
@@ -85,4 +116,6 @@ module.exports = {
   addUserExercisesToDb,
   getIdsOfExercisesInDbByNames,
   addWorkoutsToDb,
+  getUserByJwtToken,
+  addSetToDb,
 };
