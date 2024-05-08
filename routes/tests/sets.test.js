@@ -6,6 +6,7 @@ const request = defaults(supertest(app));
 const Routine = require("../../models/routine");
 const Exercise = require("../../models/exercise");
 const User = require("../../models/user");
+const Set = require("../../models/set");
 const testData = require("./testData");
 const testHelpers = require("./testHelpers");
 const Workout = require("../../models/workout");
@@ -53,22 +54,54 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
     );
   });
   beforeEach(async () => {
-    const userToOwnSets = await testHelpers.getUserByJwtToken(tokens[0]);
-    const workoutToAddSetsTo = await Workout.findOne({ user: userToOwnSets.id });
-    const exerciseToAddSetsTo = await Exercise.findOne({});
+    await Set.deleteMany({});
+    const userToOwnFirstSet = await testHelpers.getUserByJwtToken(tokens[0]);
+    const userToOwnSecondSet = await testHelpers.getUserByJwtToken(tokens[1]);
+    const workoutToAddFirstSetTo = await Workout.findOne({ user: userToOwnFirstSet.id });
+    const workoutToAddSecondSetTo = await Workout.findOne({ user: userToOwnSecondSet.id });
+    const exercises = await Exercise.find({});
     await testHelpers.addSetToDb(
       1,
       8,
       60,
       120,
-      userToOwnSets.username,
-      workoutToAddSetsTo._id,
+      userToOwnFirstSet.username,
+      workoutToAddFirstSetTo._id,
       "testnote",
-      exerciseToAddSetsTo._id,
+      exercises[0]._id,
     );
-    // THIS WORKS DO SOME TESTS AFTER THIS IDFK
+    await testHelpers.addSetToDb(
+      2,
+      7,
+      60,
+      120,
+      userToOwnSecondSet.username,
+      workoutToAddSecondSetTo._id,
+      "testnote2",
+      exercises[1]._id,
+    );
   });
-  it("passes", async () => {
+  describe("When logged in", () => {
+    beforeAll(async () => {
+      request.set("Authorization", `Bearer ${tokens[0]}`);
+    });
+    it("a GET request to /api/sets returns the sets completed by the logged in user but not any other sets", async () => {
 
+    });
+  });
+  describe("When not logged in", () => {
+    beforeAll(async () => {
+      request.set("Authorization", "");
+    });
+    it("a GET request to /api/sets returns 401 unauthorized", async () => {
+      await request
+        .get("/api/workouts")
+        .expect(401);
+    });
+    it("a POST request to /api/sets returns 401 unauthorized", async () => {
+      await request
+        .post("/api/workouts")
+        .expect(401);
+    });
   });
 });

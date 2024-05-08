@@ -6,6 +6,7 @@ const request = defaults(supertest(app));
 const Routine = require("../../models/routine");
 const Exercise = require("../../models/exercise");
 const User = require("../../models/user");
+const Set = require("../../models/set");
 const testData = require("./testData");
 const testHelpers = require("./testHelpers");
 const Workout = require("../../models/workout");
@@ -79,6 +80,14 @@ describe("When there are users, anonymous exercises, routines and workouts in th
       expect(recievedWorkouts).toContainEqual(expectedWorkout);
       expect(recievedWorkouts).not.toContainEqual(unexpectedWorkout);
     });
+    it("a GET request to /api/workouts/:id?includeExercises returns the workout with the exercises populated", async () => {
+      const availableWorkouts = await Workout.find(
+        { user: await testHelpers.getUserByJwtToken(tokens[0]) },
+      );
+      const res = await request.get(`/api/workouts/${availableWorkouts[0].id}?includeExercises`);
+      const { exercises } = res.body.routine;
+      expect(exercises.map((exercise) => exercise.name)).not.toContainEqual(undefined);
+    });
     it("a workout is added by a POST request to /api/workouts", async () => {
       const workoutsAtStart = await Workout.find({});
       const loggedInUser = await testHelpers.getUserByJwtToken(tokens[0]);
@@ -106,7 +115,35 @@ describe("When there are users, anonymous exercises, routines and workouts in th
       const workoutsAtEnd = await Workout.find({});
       expect(workoutsAtEnd.length).toBe(workoutsAtStart.length);
     });
+    describe("When there are sets assigned to a workout", () => {
+      beforeEach(async () => {
+        Set.deleteMany({});
+        const loggedInUser = await testHelpers.getUserByJwtToken(tokens[0]);
+        const availableWorkouts = await Workout.find(
+          { user: loggedInUser },
+        );
+        const availableExercises = await Exercise.find({});
+        const setToSave = new Set({
+          number: 1,
+          reps: 10,
+          weight: 60,
+          rest: 120,
+          user: loggedInUser._id,
+          workout: availableWorkouts[0]._id,
+          exercise: availableExercises[0]._id,
+        });
+        await setToSave.save();
+      });
+      it("a GET request to /api/workouts/:id?includeSets returns the workout with the sets populated", async () => {
+        const availableWorkouts = await Workout.find(
+          { user: await testHelpers.getUserByJwtToken(tokens[0]) },
+        );
+        const res = await request.get(`/api/workouts/${availableWorkouts[0]._id}?includeSets`);
+        expect(res.body.sets).toBeDefined();
+      });
+    });
   });
+
   describe("When not logged in", () => {
     beforeAll(async () => {
       request.set("Authorization", "");
