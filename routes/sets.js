@@ -25,6 +25,9 @@ setRouter.post("/", async (req, res) => {
     .find({ $or: [{ user: req.user.id }, { user: undefined }] });
   const idsOfExercisesAvailableToUser = exercisesAvailableToUser
     .map((exercise) => exercise.toJSON().id);
+  if (!(req.body.workout && req.body.exercise)) {
+    return res.status(400).json({ error: "set and workout are required fields" });
+  }
   if (!idsOfworkoutsAvailableToUser.includes(req.body.workout)) {
     return res.status(401).json({ error: "you do not have access to this workout" });
   }

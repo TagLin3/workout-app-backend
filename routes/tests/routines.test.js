@@ -96,13 +96,11 @@ describe("When there are users, anonymous exercises and routines in the database
   });
 });
 
-describe("When there are users who owns user exercises in the database", () => {
+describe("When there are users who own user exercises in the database", () => {
   let tokens;
   beforeAll(async () => {
     await User.deleteMany({});
     tokens = await testHelpers.addUsersToDbAndGetTokens(testData.initialUsers.slice(0, 2));
-  });
-  beforeEach(async () => {
     await Exercise.deleteMany({});
     await testHelpers.addUserExercisesToDb(
       testData.initialUserExercisesForUser1,
@@ -113,13 +111,16 @@ describe("When there are users who owns user exercises in the database", () => {
       testData.initialUsers[1],
     );
   });
+  beforeEach(async () => {
+    await Routine.deleteMany({});
+  });
   describe("When logged in", () => {
     beforeAll(() => {
       request.set("Authorization", `Bearer ${tokens[0]}`);
     });
     it("a routine with user exercises owned by the logged in user can be added by a POST request to /api/routines", async () => {
       const foundUsers = await User.find({ username: testData.initialUsers[0].username });
-      const user1ExercisesInDb = await Exercise.find({ user: foundUsers[0]._id });
+      const user1ExercisesInDb = await Exercise.find({ user: foundUsers[0].id });
       const exercisesToAdd = user1ExercisesInDb.map((exercise) => exercise.id);
       const res = await request
         .post("/api/routines")
@@ -138,8 +139,9 @@ describe("When there are users who owns user exercises in the database", () => {
       });
     });
     it("a routine with user exercises not owned by the logged in user can't be added by a POST request to /api/routines", async () => {
+      const routinesAtStart = await Routine.find({});
       const foundUsers = await User.find({ username: testData.initialUsers[1].username });
-      const user2ExercisesInDb = await Exercise.find({ user: foundUsers[0]._id });
+      const user2ExercisesInDb = await Exercise.find({ user: foundUsers[0].id });
       const exercisesToAdd = user2ExercisesInDb.map((exercise) => exercise.id);
       const res = await request
         .post("/api/routines")
@@ -149,6 +151,8 @@ describe("When there are users who owns user exercises in the database", () => {
         })
         .expect(401);
       expect(res.body).toEqual({ error: "you do not have access to use one or more of the exercises" });
+      const routinesAtEnd = await Routine.find({});
+      expect(routinesAtStart.length).toBe(routinesAtEnd.length);
     });
   });
 });

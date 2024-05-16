@@ -89,10 +89,35 @@ const initialRoutines = [
   },
 ];
 
+const initialSets = [
+  {
+    number: 1,
+    reps: 8,
+    weight: 60,
+    rest: 120,
+    note: "testnote",
+  },
+  {
+    number: 1,
+    reps: 15,
+    weight: 20,
+    rest: 120,
+    note: "testnote2",
+  },
+  {
+    number: 1,
+    reps: 7,
+    weight: 60,
+    rest: 120,
+    note: "testnote3",
+  },
+];
+
 module.exports = {
   initialAnonymousExercises,
   initialRoutines,
   initialUsers,
   initialUserExercisesForUser1,
   initialUserExercisesForUser2,
+  initialSets,
 };

@@ -128,9 +128,9 @@ describe("When there are users, anonymous exercises, routines and workouts in th
           reps: 10,
           weight: 60,
           rest: 120,
-          user: loggedInUser._id,
-          workout: availableWorkouts[0]._id,
-          exercise: availableExercises[0]._id,
+          user: loggedInUser.id,
+          workout: availableWorkouts[0].id,
+          exercise: availableExercises[0].id,
         });
         await setToSave.save();
       });
@@ -138,12 +138,11 @@ describe("When there are users, anonymous exercises, routines and workouts in th
         const availableWorkouts = await Workout.find(
           { user: await testHelpers.getUserByJwtToken(tokens[0]) },
         );
-        const res = await request.get(`/api/workouts/${availableWorkouts[0]._id}?includeSets`);
+        const res = await request.get(`/api/workouts/${availableWorkouts[0].id}?includeSets`);
         expect(res.body.sets).toBeDefined();
       });
     });
   });
-
   describe("When not logged in", () => {
     beforeAll(async () => {
       request.set("Authorization", "");

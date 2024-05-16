@@ -84,26 +84,13 @@ const addWorkoutsToDb = async (numberOfWorkouts, routineName, usernameToOwnWorko
   await Promise.all(workoutsToSave.map((workout) => workout.save()));
 };
 
-const addSetToDb = async (
-  number,
-  reps,
-  weight,
-  rest,
-  usernameToOwnSet,
-  workoutOfSet,
-  note,
-  exercise,
-) => {
+const addSetToDb = async (setObj, usernameToOwnSet, workoutId, exerciseId) => {
   const owner = await User.findOne({ username: usernameToOwnSet });
   const setToAdd = new Set({
-    number,
-    reps,
-    weight,
-    rest,
-    workout: workoutOfSet,
-    user: owner.id,
-    note,
-    exercise: exercise.id,
+    ...setObj,
+    workout: workoutId,
+    exercise: exerciseId,
+    user: owner,
   });
   await setToAdd.save();
 };
