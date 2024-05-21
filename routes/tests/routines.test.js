@@ -65,6 +65,14 @@ describe("When there are users, anonymous exercises and routines in the database
       expect(recievedRoutines).toContainEqual(testData.initialRoutines[1]);
       expect(recievedRoutines).not.toContainEqual(testData.initialRoutines[2]);
     });
+    it("a GET request to /api/routines/:id returns the correct routine", async () => {
+      const loggedInUser = await testHelpers.getUserByJwtToken(tokenOfRoutineOwner);
+      const routineToGet = await Routine.findOne({ user: loggedInUser.id });
+      const res = await request
+        .get(`/api/routines/${routineToGet.id}`)
+        .expect(200);
+      expect(res.body.id).toEqual(routineToGet.id);
+    });
     it("a routine is added by a POST request to /api/routines", async () => {
       const routinesAtStart = await Routine.find({});
       const exercisesInDb = await Exercise.find({});

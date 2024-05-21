@@ -197,6 +197,8 @@ describe("When there are users with user exercises, routines and workouts in the
     await Exercise.deleteMany({});
     await Routine.deleteMany({});
     tokens = await testHelpers.addUsersToDbAndGetTokens(testData.initialUsers.slice(0, 2));
+    const user1 = await testHelpers.getUserByJwtToken(tokens[0]);
+    const user2 = await testHelpers.getUserByJwtToken(tokens[1]);
     await testHelpers.addUserExercisesToDb(
       testData.initialUserExercisesForUser1,
       testData.initialUsers[0],
@@ -205,14 +207,16 @@ describe("When there are users with user exercises, routines and workouts in the
       testData.initialUserExercisesForUser2,
       testData.initialUsers[1],
     );
+    const user1ExercisesInDb = await Exercise.find({ user: user1.id });
+    const user2ExercisesInDb = await Exercise.find({ user: user2.id });
     await testHelpers.addRoutinesToDb(
       [testData.initialRoutines[0].name],
-      testData.initialUserExercisesForUser1,
+      user1ExercisesInDb.map((exercise) => exercise.id),
       testData.initialUsers[0].username,
     );
     await testHelpers.addRoutinesToDb(
       [testData.initialRoutines[1].name],
-      testData.initialUserExercisesForUser2,
+      user2ExercisesInDb.map((exercise) => exercise.id),
       testData.initialUsers[1].username,
     );
     await testHelpers.addWorkoutsToDb(
@@ -234,16 +238,42 @@ describe("When there are users with user exercises, routines and workouts in the
       request.set("Authorization", `Bearer ${tokens[0]}`);
     });
     it("a set with user exercises owned by the logged in user can be added by a POST request to /api/sets", async () => {
-      // TODO
-      // request
-      //   .post("/api/sets")
-      //   .send({
-
-      //   })
-      //   .expect(201);
+      const setsAtStart = await Set.find({});
+      const loggedInUser = await testHelpers.getUserByJwtToken(tokens[0]);
+      const availableExercises = await Exercise.find({ user: loggedInUser.id });
+      const workout = await Workout.findOne({ user: loggedInUser.id });
+      await request
+        .post("/api/sets")
+        .send({
+          number: 1,
+          reps: 1,
+          weight: 1,
+          rest: 1,
+          workout: workout.id,
+          exercise: availableExercises[0].id,
+        })
+        .expect(201);
+      const setsAtEnd = await Set.find({});
+      expect(setsAtEnd.length).toBe(setsAtStart.length + 1);
     });
     it("a set with user exercises not owned by the logged in user can't be added by a POST request to /api/sets", async () => {
-
+      const setsAtStart = await Set.find({});
+      const notLoggedInUser = await testHelpers.getUserByJwtToken(tokens[1]);
+      const unavailableExercises = await Exercise.find({ user: notLoggedInUser.id });
+      const workout = await Workout.findOne({ user: notLoggedInUser.id });
+      await request
+        .post("/api/sets")
+        .send({
+          number: 1,
+          reps: 1,
+          weight: 1,
+          rest: 1,
+          workout: workout.id,
+          exercise: unavailableExercises[0].id,
+        })
+        .expect(401);
+      const setsAtEnd = await Set.find({});
+      expect(setsAtEnd.length).toBe(setsAtStart.length);
     });
   });
 });
