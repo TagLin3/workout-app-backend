@@ -1,6 +1,34 @@
 const mongoose = require("mongoose");
 /* eslint no-param-reassign: 0 */
 
+const exerciseInstanceSchema = new mongoose.Schema({
+  exercise: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Exercise",
+    required: true,
+  },
+  repRange: {
+    min: {
+      type: Number,
+      validate: {
+        validator: (obj) => {
+
+        },
+        message: "min must be less than max",
+      },
+    },
+    max: {
+      type: Number,
+      validate: {
+        validator: (obj) => {
+
+        },
+        message: "max must be more than min",
+      },
+    },
+  },
+});
+
 const routineSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -12,10 +40,7 @@ const routineSchema = new mongoose.Schema({
     required: true,
   },
   exercises: {
-    type: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Exercise",
-    }],
+    type: [exerciseInstanceSchema],
     required: true,
   },
 });

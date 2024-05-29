@@ -25,7 +25,12 @@ it("using an invalid authorization token for requests returns 401 unauthorized w
 });
 
 it("using an expired authorization token for requests returns 401 unauthorized with the correct error message", async () => {
-  const tokens = await testHelpers.addUsersToDbAndGetTokens(testData.initialUsers);
-  request.set("Authorization", `Bearer ${tokens[0]}`);
-  // expect(res.body).toEqual({ error: "Authorization token expired" });
+  const user = new User(testData.initialUsers[0]);
+  const savedUser = await user.save();
+  const expiredToken = await testHelpers.createExpiredToken(savedUser.toJSON());
+  request.set("Authorization", `Bearer ${expiredToken}`);
+  const res = await request
+    .get("/api/exercises")
+    .expect(401);
+  expect(res.body).toEqual({ error: "Authorization token expired" });
 });

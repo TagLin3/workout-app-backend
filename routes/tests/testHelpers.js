@@ -95,6 +95,8 @@ const addSetToDb = async (setObj, usernameToOwnSet, workoutId, exerciseId) => {
   await setToAdd.save();
 };
 
+const createExpiredToken = async (user) => jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "0s" });
+
 module.exports = {
   addUsersToDbAndGetTokens,
   addAnonymousExercisesToDb,
@@ -105,4 +107,5 @@ module.exports = {
   addWorkoutsToDb,
   getUserByJwtToken,
   addSetToDb,
+  createExpiredToken,
 };

@@ -1,12 +1,21 @@
 POST http://localhost:3001/api/routines
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZTIiLCJuYW1lIjoidGVzdE5hbWUyIiwiaWQiOiI2NjA1NTY5MmZkNTA4M2FlNDM3MzcwOWYiLCJpYXQiOjE3MTE5NTU3MzksImV4cCI6MTcxMTk5MTczOX0.VCpY8HyQttAqkMpBDdZz9ro3ZbVN4yAFRLq_uKrSgQM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZTMiLCJuYW1lIjoidGVzdE5hbWUzIiwiaWQiOiI2NjEyNmE5YjQzYTMwZGRkZmU2YzAzYWUiLCJpYXQiOjE3MTY5Njc3NTMsImV4cCI6MTcxNzAwMzc1M30.gYgB8na9THrU-8Ygoj4IGsnP0niuHBPqYLAkqu4To24
 
 {
   "name": "push day",
   "exercises": [
-    "65f184021d517d70c13023e1",
-    "65f1840b1d517d70c13023e3",
-    "65f184171d517d70c13023e5"
+    {
+      "exercise": "65f184021d517d70c13023e1",
+      "repRange": "10-15"
+    },
+    {
+      "exercise": "65f1840b1d517d70c13023e3",
+      "repRange": "10-15"
+    },
+    {
+      "exercise": "65f184171d517d70c13023e5",
+      "repRange": "10-15"
+    }
   ]
 }
