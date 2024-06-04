@@ -8,23 +8,19 @@ const exerciseInstanceSchema = new mongoose.Schema({
     required: true,
   },
   repRange: {
-    min: {
-      type: Number,
-      validate: {
-        validator: (obj) => {
-
-        },
-        message: "min must be less than max",
+    type: String,
+    validate: {
+      validator: (obj) => {
+        const correct = /\d+-\d+/;
+        if (correct.test(obj)) {
+          const [min, max] = obj.match(/\d+/g);
+          if (min < max) {
+            return true;
+          }
+        }
+        return false;
       },
-    },
-    max: {
-      type: Number,
-      validate: {
-        validator: (obj) => {
-
-        },
-        message: "max must be more than min",
-      },
+      message: "rep range must be of the format 'x-y' where x and y are numbers and x < y",
     },
   },
 });

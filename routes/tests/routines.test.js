@@ -31,7 +31,7 @@ describe("When there are users, anonymous exercises and routines in the database
   beforeEach(async () => {
     await Routine.deleteMany({});
     const exerciseIds = await testHelpers.getIdsOfExercisesInDbByNames(
-      testData.initialAnonymousExercises.slice(0, 6).map((exercise) => exercise.name),
+      testData.initialAnonymousExercises.map((exercise) => exercise.name),
     );
     await testHelpers.addRoutinesToDb(
       testData.initialRoutines.slice(0, 2).map((routine) => routine.name),
@@ -54,7 +54,10 @@ describe("When there are users, anonymous exercises and routines in the database
         .expect(200);
       const recievedRoutines = res.body
         .map((routine) => {
-          const exerciseNames = routine.exercises.map((exercise) => ({ name: exercise.name }));
+          console.log(routine.exercises);
+          const exerciseNames = routine.exercises.map(
+            (exercise) => ({ name: exercise.name }),
+          );
           return {
             name: routine.name,
             exercises: exerciseNames,

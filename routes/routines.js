@@ -3,7 +3,12 @@ const Exercise = require("../models/exercise");
 const Routine = require("../models/routine");
 
 routineRouter.get("/", async (req, res) => {
-  const routines = await Routine.find({ user: req.user.id }).populate("exercises");
+  const routines = await Routine.find({ user: req.user.id });
+  // SOMEHOW POPULATE THE EXERCISES IN THE EXERCISEINSTANCE OBJECTS
+  // const exerciseInstances = routines.map((routine) => routine.exercises);
+  // Routine.populate(exerciseInstances, {
+  //   path: "exercises",
+  // });
   return res.json(routines);
 });
 

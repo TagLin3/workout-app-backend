@@ -68,7 +68,10 @@ const addRoutinesToDb = async (namesOfRoutinesToAdd, exerciseIds, usernameToOwnR
   const exercisesForEachRoutine = _.chunk(exerciseIds, numberOfExercisesInEachRoutine);
   const routinesToSave = namesOfRoutinesToAdd.map((nameOfRoutine, index) => new Routine({
     name: nameOfRoutine,
-    exercises: exercisesForEachRoutine[index],
+    exercises: exercisesForEachRoutine[index].map((exercise) => ({
+      exercise,
+      repRange: "10-15",
+    })),
     user: owner.id,
   }));
   await Promise.all(routinesToSave.map((routineToSave) => routineToSave.save()));
