@@ -54,9 +54,8 @@ describe("When there are users, anonymous exercises and routines in the database
         .expect(200);
       const recievedRoutines = res.body
         .map((routine) => {
-          console.log(routine.exercises);
           const exerciseNames = routine.exercises.map(
-            (exercise) => ({ name: exercise.name }),
+            (exercise) => ({ name: exercise.exercise.name }),
           );
           return {
             name: routine.name,
@@ -83,7 +82,10 @@ describe("When there are users, anonymous exercises and routines in the database
         .post("/api/routines")
         .send({
           name: "testRoutine",
-          exercises: exercisesInDb.map((exercise) => exercise.id),
+          exercises: exercisesInDb.map((exercise) => ({
+            exercise: exercise.id,
+            repRange: "8-12",
+          })),
         })
         .expect(201);
       const routinesInDb = await Routine.find({});
@@ -132,7 +134,10 @@ describe("When there are users who own user exercises in the database", () => {
     it("a routine with user exercises owned by the logged in user can be added by a POST request to /api/routines", async () => {
       const foundUsers = await User.find({ username: testData.initialUsers[0].username });
       const user1ExercisesInDb = await Exercise.find({ user: foundUsers[0].id });
-      const exercisesToAdd = user1ExercisesInDb.map((exercise) => exercise.id);
+      const exercisesToAdd = user1ExercisesInDb.map((exercise) => ({
+        exercise: exercise.id,
+        repRange: "6-10",
+      }));
       const res = await request
         .post("/api/routines")
         .send({
@@ -142,7 +147,10 @@ describe("When there are users who own user exercises in the database", () => {
         .expect(201);
       const recievedRoutine = {
         name: res.body.name,
-        exercises: res.body.exercises,
+        exercises: res.body.exercises.map((exercise) => ({
+          exercise: exercise.exercise,
+          repRange: exercise.repRange,
+        })),
       };
       expect(recievedRoutine).toEqual({
         name: "testRoutineWithUserExercises",
@@ -153,7 +161,10 @@ describe("When there are users who own user exercises in the database", () => {
       const routinesAtStart = await Routine.find({});
       const foundUsers = await User.find({ username: testData.initialUsers[1].username });
       const user2ExercisesInDb = await Exercise.find({ user: foundUsers[0].id });
-      const exercisesToAdd = user2ExercisesInDb.map((exercise) => exercise.id);
+      const exercisesToAdd = user2ExercisesInDb.map((exercise) => ({
+        exercise: exercise.id,
+        repRange: "6-10",
+      }));
       const res = await request
         .post("/api/routines")
         .send({

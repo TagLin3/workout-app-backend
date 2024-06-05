@@ -3,17 +3,14 @@ const Exercise = require("../models/exercise");
 const Routine = require("../models/routine");
 
 routineRouter.get("/", async (req, res) => {
-  const routines = await Routine.find({ user: req.user.id });
-  // SOMEHOW POPULATE THE EXERCISES IN THE EXERCISEINSTANCE OBJECTS
-  // const exerciseInstances = routines.map((routine) => routine.exercises);
-  // Routine.populate(exerciseInstances, {
-  //   path: "exercises",
-  // });
+  const routines = await Routine.find({ user: req.user.id })
+    .populate("exercises.exercise");
   return res.json(routines);
 });
 
 routineRouter.get("/:id", async (req, res) => {
-  const routine = await Routine.findOne({ _id: req.params.id, user: req.user.id }).populate("exercises");
+  const routine = await Routine.findOne({ _id: req.params.id, user: req.user.id })
+    .populate("exercises.exercise");
   if (!routine) {
     return res.status(404).json({ error: "routine not found" });
   }

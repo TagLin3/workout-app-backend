@@ -86,7 +86,7 @@ describe("When there are users, anonymous exercises, routines and workouts in th
       );
       const res = await request.get(`/api/workouts/${availableWorkouts[0].id}?includeExercises`);
       const { exercises } = res.body.routine;
-      expect(exercises.map((exercise) => exercise.name)).not.toContainEqual(undefined);
+      expect(exercises.map((exercise) => exercise.exercise.name)).not.toContainEqual(undefined);
     });
     it("a workout is added by a POST request to /api/workouts", async () => {
       const workoutsAtStart = await Workout.find({});

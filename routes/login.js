@@ -17,10 +17,13 @@ loginRouter.post("/", async (req, res) => {
       error: "username or password incorrect",
     });
   }
+  const expireHours = 10;
   const token = jwt.sign(userToLogIn.toJSON(), process.env.JWT_SECRET, {
-    expiresIn: "10h",
+    expiresIn: `${expireHours}h`,
   });
-  return res.json({ token, username, name: userToLogIn.name });
+  return res.json({
+    token, username, name: userToLogIn.name, expiresAt: Date.now() + expireHours * 60 * 60 * 1000,
+  });
 });
 
 module.exports = loginRouter;

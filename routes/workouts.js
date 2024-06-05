@@ -12,7 +12,7 @@ workoutRouter.get("/:id", async (req, res) => {
   const workout = await Workout.findOne({ _id: req.params.id, user: req.user.id }).populate({
     path: "routine",
     populate: req.query.includeExercises !== undefined
-      ? { path: "exercises" }
+      ? { path: "exercises.exercise" }
       : undefined,
   });
   if (!workout) {

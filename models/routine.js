@@ -14,7 +14,7 @@ const exerciseInstanceSchema = new mongoose.Schema({
         const correct = /\d+-\d+/;
         if (correct.test(obj)) {
           const [min, max] = obj.match(/\d+/g);
-          if (min < max) {
+          if (Number(min) < Number(max)) {
             return true;
           }
         }
