@@ -43,4 +43,12 @@ workoutRouter.post("/", async (req, res) => {
   return res.status(201).json(savedWorkout);
 });
 
+workoutRouter.delete("/:id", async (req, res) => {
+  const workoutToDelete = await Workout.findOne({ _id: req.params.id, user: req.user.id });
+  if (workoutToDelete) {
+    await Workout.findByIdAndDelete(req.params.id);
+  }
+  return res.status(204).end();
+});
+
 module.exports = workoutRouter;
