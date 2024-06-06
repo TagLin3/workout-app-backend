@@ -48,6 +48,10 @@ workoutRouter.delete("/:id", async (req, res) => {
   if (workoutToDelete) {
     await Workout.findByIdAndDelete(req.params.id);
   }
+  const setsToDelete = await Set.find({ workout: req.params.id, user: req.user.id });
+  if (setsToDelete) {
+    await Set.deleteMany({ workout: req.params.id });
+  }
   return res.status(204).end();
 });
 
