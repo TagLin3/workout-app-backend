@@ -39,6 +39,10 @@ const routineSchema = new mongoose.Schema({
     type: [exerciseInstanceSchema],
     required: true,
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 routineSchema.set("toJSON", {
