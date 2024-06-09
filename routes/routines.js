@@ -3,12 +3,12 @@ const Exercise = require("../models/exercise");
 const Routine = require("../models/routine");
 
 routineRouter.get("/", async (req, res) => {
-  if (req.query.activeOnly) {
+  if (req.query.activeOnly !== undefined) {
     const routines = await Routine.find({ user: req.user.id, active: true })
       .populate("exercises.exercise");
     return res.json(routines);
   }
-  if (req.query.inactiveOnly) {
+  if (req.query.inactiveOnly !== undefined) {
     const routines = await Routine.find({ user: req.user.id, active: false })
       .populate("exercises.exercise");
     return res.json(routines);

@@ -35,6 +35,9 @@ workoutRouter.post("/", async (req, res) => {
   if (!idsOfRoutinesAvailableToUser.includes(req.body.routine)) {
     return res.status(401).json({ error: "you do not have access to this routine" });
   }
+  if (!req.body.routine.active) {
+    return res.status(401).json({ error: "you can't create a workout based on an inactive routine" });
+  }
   const workout = new Workout({
     routine: req.body.routine,
     user: req.user.id,
