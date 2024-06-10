@@ -1,6 +1,8 @@
 const routineRouter = require("express").Router();
 const Exercise = require("../models/exercise");
 const Routine = require("../models/routine");
+const Workout = require("../models/workout");
+const Set = require("../models/set");
 
 routineRouter.get("/", async (req, res) => {
   if (req.query.activeOnly !== undefined) {
@@ -48,18 +50,27 @@ routineRouter.put("/:id/toggleActivity", async (req, res) => {
   if (!routineToUpdate) {
     return res.status(404).json({ error: "routine not found" });
   }
-  const updatedRoutine = Routine.findByIdAndUpdate(req.query.id, {
+  await Routine.findByIdAndUpdate(req.params.id, {
     active: !routineToUpdate.active,
   });
-  return res.json(updatedRoutine);
+  return res.status(201).end();
 });
 
 routineRouter.delete("/:id", async (req, res) => {
-  // const routineToDelete = await Routine.findOne({ _id: req.params.id, user: req.user.id });
-  // if (routineToDelete) {
-  //   await Routine.findByIdAndDelete(req.params.id);
-  // }
-  console.log("deleteing routine");
+  const routineToDelete = await Routine.findOne({ _id: req.params.id, user: req.user.id });
+  if (routineToDelete) {
+    if (routineToDelete.active) {
+      return res.status(400).json({ error: "only inactive routines can be deleted" });
+    }
+    const workoutsToDeleteSetsFor = await Workout.find({ routine: req.params.id });
+    await Promise.all(
+      workoutsToDeleteSetsFor.map(
+        (workoutToDeleteSetFor) => Set.deleteMany({ workout: workoutToDeleteSetFor.id }),
+      ),
+    );
+    await Workout.deleteMany({ routine: req.params.id });
+    await Routine.findByIdAndDelete(req.params.id);
+  }
   return res.status(204).end();
 });
 
