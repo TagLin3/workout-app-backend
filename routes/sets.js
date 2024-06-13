@@ -10,7 +10,7 @@ setRouter.get("/", async (req, res) => {
   } else {
     sets = await Set.find({ user: req.user.id });
   }
-  if (req.query.populateExercises !== undefined) {
+  if (req.query.includeExercises !== undefined) {
     await Set.populate(sets, { path: "exercise" });
   }
   return res.json(sets);
