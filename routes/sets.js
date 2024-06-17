@@ -39,4 +39,9 @@ setRouter.post("/", async (req, res) => {
   return res.status(201).json(savedSet);
 });
 
+setRouter.delete("/:id", async (req, res) => {
+  await Set.deleteOne({ _id: req.params.id, user: req.user.id });
+  res.status(204).end();
+});
+
 module.exports = setRouter;
