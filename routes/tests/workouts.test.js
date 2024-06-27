@@ -138,8 +138,25 @@ describe("When there are users, anonymous exercises, routines and workouts in th
         const availableWorkouts = await Workout.find(
           { user: await testHelpers.getUserByJwtToken(tokens[0]) },
         );
-        const res = await request.get(`/api/workouts/${availableWorkouts[0].id}?includeSets`);
+        const res = await request
+          .get(`/api/workouts/${availableWorkouts[0].id}?includeSets`)
+          .expect(200);
         expect(res.body.sets).toBeDefined();
+      });
+      it("a DELETE request to /api/workouts/:id deletes the corresponding workout and the sets associated with it", async () => {
+        const workoutToDelete = await Workout.findOne(
+          { user: await testHelpers.getUserByJwtToken(tokens[0]) },
+        );
+        const setsOfWorkoutToDelete = await Set.find({ workout: workoutToDelete.id });
+        await request
+          .delete(`/api/workouts/${workoutToDelete.id}`)
+          .expect(204);
+        const workoutsAtEnd = await Workout.find({});
+        const setsAtEnd = await Set.find({});
+        expect(workoutsAtEnd).not.toContainEqual(workoutToDelete);
+        setsOfWorkoutToDelete.forEach((set) => {
+          expect(setsAtEnd).not.toContainEqual(set);
+        });
       });
     });
   });

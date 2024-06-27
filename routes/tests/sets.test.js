@@ -27,8 +27,12 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
     await User.deleteMany({});
     await Exercise.deleteMany({});
     await Routine.deleteMany({});
-    tokens = await testHelpers.addUsersToDbAndGetTokens(testData.initialUsers.slice(0, 2));
-    await testHelpers.addAnonymousExercisesToDb(testData.initialAnonymousExercises);
+    tokens = await testHelpers.addUsersToDbAndGetTokens(
+      testData.initialUsers.slice(0, 2),
+    );
+    await testHelpers.addAnonymousExercisesToDb(
+      testData.initialAnonymousExercises,
+    );
     const exerciseIds = await testHelpers.getIdsOfExercisesInDbByNames(
       testData.initialAnonymousExercises.map((exercise) => exercise.name),
     );
@@ -57,8 +61,12 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
     await Set.deleteMany({});
     const userToOwnFirstSet = await testHelpers.getUserByJwtToken(tokens[0]);
     const userToOwnSecondSet = await testHelpers.getUserByJwtToken(tokens[1]);
-    const workoutToAddFirstSetTo = await Workout.findOne({ user: userToOwnFirstSet.id });
-    const workoutToAddSecondSetTo = await Workout.findOne({ user: userToOwnSecondSet.id });
+    const workoutToAddFirstSetTo = await Workout.findOne({
+      user: userToOwnFirstSet.id,
+    });
+    const workoutToAddSecondSetTo = await Workout.findOne({
+      user: userToOwnSecondSet.id,
+    });
     const exercises = (await Exercise.find({})).toSorted();
     await testHelpers.addSetToDb(
       testData.initialSets[0],
@@ -84,9 +92,7 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
       request.set("Authorization", `Bearer ${tokens[0]}`);
     });
     it("a GET request to /api/sets returns the sets completed by the logged in user but not any other sets", async () => {
-      const res = await request
-        .get("/api/sets")
-        .expect(200);
+      const res = await request.get("/api/sets").expect(200);
       const recievedSets = res.body.map((set) => ({
         number: set.number,
         weight: set.weight,
@@ -113,14 +119,12 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
       expect(recievedSets).toContainEqual(testData.initialSets[0]);
       expect(recievedSets).not.toContainEqual(testData.initialSets[1]);
     });
-    it("a GET request to /api/sets?populateExercises returns the sets with the exercises populated", async () => {
-      const res = await request
-        .get("/api/sets?populateExercises")
-        .expect(200);
+    it("a GET request to /api/sets?includeExercises returns the sets with the exercises populated", async () => {
+      const res = await request.get("/api/sets?includeExercises").expect(200);
       const exercisesOfRecievedSets = res.body.map((set) => set.exercise);
-      expect(exercisesOfRecievedSets.map(
-        (exercise) => exercise.name,
-      )).not.toContainEqual(undefined);
+      expect(
+        exercisesOfRecievedSets.map((exercise) => exercise.name),
+      ).not.toContainEqual(undefined);
     });
     it("a set is added by a POST request to /api/sets", async () => {
       const setsAtStart = await Set.find({});
@@ -155,11 +159,13 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
       const setsAtEnd = await Set.find({});
       expect(setsAtEnd.length).toBe(setsAtStart.length);
     });
-    it("a set can't be added to a workout owned by another user by a POST request to /api/sets", async () => {
+    it("a set can't be added to a workout owned by another user", async () => {
       const setsAtStart = await Set.find({});
       const exercises = await Exercise.find({});
       const userNotLoggedIn = await testHelpers.getUserByJwtToken(tokens[1]);
-      const workoutNotAvailable = await Workout.findOne({ user: userNotLoggedIn.id });
+      const workoutNotAvailable = await Workout.findOne({
+        user: userNotLoggedIn.id,
+      });
       await request
         .post("/api/sets")
         .send({
@@ -171,20 +177,27 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
       const setsAtEnd = await Set.find({});
       expect(setsAtEnd.length).toBe(setsAtStart.length);
     });
+    it("a DELETE request to /api/sets/:id deletes the corresponding set", async () => {
+      const setToDelete = await Set.findOne(
+        { user: (await testHelpers.getUserByJwtToken(tokens[0]))._id },
+      );
+      await request
+        .delete(`/api/sets/${setToDelete.id}`)
+        .expect(204);
+      const setsAtEnd = await Set.find({});
+      const idsOfSetsAtEnd = setsAtEnd.map((set) => set.id);
+      expect(idsOfSetsAtEnd).not.toContain(setToDelete.id);
+    });
   });
   describe("When not logged in", () => {
     beforeAll(async () => {
       request.set("Authorization", "");
     });
     it("a GET request to /api/sets returns 401 unauthorized", async () => {
-      await request
-        .get("/api/workouts")
-        .expect(401);
+      await request.get("/api/workouts").expect(401);
     });
     it("a POST request to /api/sets returns 401 unauthorized", async () => {
-      await request
-        .post("/api/workouts")
-        .expect(401);
+      await request.post("/api/workouts").expect(401);
     });
   });
 });
@@ -196,7 +209,9 @@ describe("When there are users with user exercises, routines and workouts in the
     await User.deleteMany({});
     await Exercise.deleteMany({});
     await Routine.deleteMany({});
-    tokens = await testHelpers.addUsersToDbAndGetTokens(testData.initialUsers.slice(0, 2));
+    tokens = await testHelpers.addUsersToDbAndGetTokens(
+      testData.initialUsers.slice(0, 2),
+    );
     const user1 = await testHelpers.getUserByJwtToken(tokens[0]);
     const user2 = await testHelpers.getUserByJwtToken(tokens[1]);
     await testHelpers.addUserExercisesToDb(
@@ -259,7 +274,9 @@ describe("When there are users with user exercises, routines and workouts in the
     it("a set with user exercises not owned by the logged in user can't be added by a POST request to /api/sets", async () => {
       const setsAtStart = await Set.find({});
       const notLoggedInUser = await testHelpers.getUserByJwtToken(tokens[1]);
-      const unavailableExercises = await Exercise.find({ user: notLoggedInUser.id });
+      const unavailableExercises = await Exercise.find({
+        user: notLoggedInUser.id,
+      });
       const workout = await Workout.findOne({ user: notLoggedInUser.id });
       await request
         .post("/api/sets")

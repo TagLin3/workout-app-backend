@@ -22,6 +22,7 @@ const exerciseInstanceSchema = new mongoose.Schema({
       },
       message: "rep range must be of the format 'x-y' where x and y are numbers and x < y",
     },
+    required: true,
   },
 });
 

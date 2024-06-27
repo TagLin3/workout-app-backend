@@ -91,6 +91,58 @@ describe("When there are users, anonymous exercises and routines in the database
       const routinesInDb = await Routine.find({});
       expect(routinesInDb.length).toBe(routinesAtStart.length + 1);
     });
+    it("a routine containing an invalid rep range can not be added", async () => {
+      const routinesAtStart = await Routine.find({});
+      const exercisesInDb = await Exercise.find({});
+      await request
+        .post("/api/routines")
+        .send({
+          name: "testRoutine",
+          exercises: exercisesInDb.map((exercise) => ({
+            exercise: exercise.id,
+            repRange: "2-1",
+          })),
+        })
+        .expect(400);
+      const routinesInDb = await Routine.find({});
+      expect(routinesInDb.length).toBe(routinesAtStart.length);
+    });
+    it("a PUT request to /api/routines/:id/toggleActivity toggles the activity of a routine", async () => {
+      const routineToUpdate = await Routine.findOne(
+        { name: testData.initialRoutines[0].name },
+      );
+      await request
+        .put(`/api/routines/${routineToUpdate.id}/toggleActivity`)
+        .expect(201);
+      const routineToUpdateAtEnd = await Routine.findOne(
+        { name: testData.initialRoutines[0].name },
+      );
+      expect(routineToUpdateAtEnd.active).toBe(!routineToUpdate.active);
+    });
+    describe("when one of the routines is inactive", () => {
+      beforeEach(async () => {
+        await Routine.findOneAndUpdate(
+          { name: testData.initialRoutines[0].name },
+          { active: false },
+        );
+      });
+      it("a GET request to /api/routines?inactiveOnly returns only the inactive routine", async () => {
+        const res = await request
+          .get("/api/routines?inactiveOnly")
+          .expect(200);
+        const recievedRoutineNames = res.body.map((routine) => routine.name);
+        expect(recievedRoutineNames).toContainEqual(testData.initialRoutines[0].name);
+        expect(recievedRoutineNames).not.toContainEqual(testData.initialRoutines[1].name);
+      });
+      it("a GET request to /api/routines?activeOnly returns only the active routines", async () => {
+        const res = await request
+          .get("/api/routines?activeOnly")
+          .expect(200);
+        const recievedRoutineNames = res.body.map((routine) => routine.name);
+        expect(recievedRoutineNames).toContainEqual(testData.initialRoutines[1].name);
+        expect(recievedRoutineNames).not.toContainEqual(testData.initialRoutines[0].name);
+      });
+    });
   });
   describe("When not logged in", () => {
     beforeAll(() => {
