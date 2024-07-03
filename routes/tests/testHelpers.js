@@ -71,6 +71,8 @@ const addRoutinesToDb = async (namesOfRoutinesToAdd, exerciseIds, usernameToOwnR
     exercises: exercisesForEachRoutine[index].map((exercise) => ({
       exercise,
       repRange: "10-15",
+      amountOfSets: 3,
+      type: "regular",
     })),
     user: owner.id,
   }));

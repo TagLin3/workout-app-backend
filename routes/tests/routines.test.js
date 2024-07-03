@@ -85,6 +85,8 @@ describe("When there are users, anonymous exercises and routines in the database
           exercises: exercisesInDb.map((exercise) => ({
             exercise: exercise.id,
             repRange: "8-12",
+            amountOfSets: 3,
+            type: "regular",
           })),
         })
         .expect(201);
@@ -101,6 +103,8 @@ describe("When there are users, anonymous exercises and routines in the database
           exercises: exercisesInDb.map((exercise) => ({
             exercise: exercise.id,
             repRange: "2-1",
+            amountOfSets: 3,
+            type: "regular",
           })),
         })
         .expect(400);
@@ -189,6 +193,8 @@ describe("When there are users who own user exercises in the database", () => {
       const exercisesToAdd = user1ExercisesInDb.map((exercise) => ({
         exercise: exercise.id,
         repRange: "6-10",
+        amountOfSets: 3,
+        type: "regular",
       }));
       const res = await request
         .post("/api/routines")
@@ -202,6 +208,8 @@ describe("When there are users who own user exercises in the database", () => {
         exercises: res.body.exercises.map((exercise) => ({
           exercise: exercise.exercise,
           repRange: exercise.repRange,
+          amountOfSets: exercise.amountOfSets,
+          type: exercise.type,
         })),
       };
       expect(recievedRoutine).toEqual({

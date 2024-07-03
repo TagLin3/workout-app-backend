@@ -7,6 +7,11 @@ const exerciseInstanceSchema = new mongoose.Schema({
     ref: "Exercise",
     required: true,
   },
+  type: {
+    type: String,
+    required: true,
+    enum: ["regular", "dropset"],
+  },
   repRange: {
     type: String,
     validate: {
@@ -23,6 +28,14 @@ const exerciseInstanceSchema = new mongoose.Schema({
       message: "rep range must be of the format 'x-y' where x and y are numbers and x < y",
     },
     required: true,
+  },
+  amountOfSets: {
+    type: Number,
+    required: true,
+  },
+  amountOfDropSets: {
+    type: Number,
+    required() { return this.type === "dropset"; },
   },
 });
 
