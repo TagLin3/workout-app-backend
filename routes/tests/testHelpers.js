@@ -96,6 +96,7 @@ const addSetToDb = async (setObj, usernameToOwnSet, workoutId, exerciseId) => {
     workout: workoutId,
     exercise: exerciseId,
     user: owner,
+    type: "regular",
   });
   await setToAdd.save();
 };

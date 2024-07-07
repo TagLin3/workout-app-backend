@@ -131,6 +131,7 @@ describe("When there are users, anonymous exercises, routines and workouts in th
           user: loggedInUser.id,
           workout: availableWorkouts[0].id,
           exercise: availableExercises[0].id,
+          type: "regular",
         });
         await setToSave.save();
       });

@@ -2,6 +2,15 @@ const mongoose = require("mongoose");
 /* eslint no-param-reassign: 0 */
 
 const setSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    required: true,
+    enum: ["regular", "dropset"],
+  },
+  numberInDropSet: {
+    type: Number,
+    required() { return this.type === "dropset"; },
+  },
   number: {
     type: Number,
     required: true,

@@ -140,6 +140,7 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
           rest: 999,
           exercise: exercises[0].id,
           workout: workout.id,
+          type: "regular",
         })
         .expect(201);
       const setsAtEnd = await Set.find({});
@@ -154,6 +155,7 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
           weight: 123,
           reps: 1,
           rest: 999,
+          type: "regular",
         })
         .expect(400);
       const setsAtEnd = await Set.find({});
@@ -266,6 +268,7 @@ describe("When there are users with user exercises, routines and workouts in the
           rest: 1,
           workout: workout.id,
           exercise: availableExercises[0].id,
+          type: "regular",
         })
         .expect(201);
       const setsAtEnd = await Set.find({});
