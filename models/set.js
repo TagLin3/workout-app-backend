@@ -7,10 +7,6 @@ const setSchema = new mongoose.Schema({
     required: true,
     enum: ["regular", "dropset"],
   },
-  numberInDropSet: {
-    type: Number,
-    required() { return this.type === "dropset"; },
-  },
   number: {
     type: Number,
     required: true,
