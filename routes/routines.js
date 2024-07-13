@@ -42,7 +42,6 @@ routineRouter.post("/", async (req, res) => {
   }
   const routine = new Routine({ ...req.body, user: req.user.id });
   const savedRoutine = await routine.save();
-  console.log(savedRoutine);
   return res.status(201).json(savedRoutine);
 });
 
