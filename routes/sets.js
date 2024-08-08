@@ -44,4 +44,12 @@ setRouter.delete("/:id", async (req, res) => {
   res.status(204).end();
 });
 
+setRouter.put("/:id", async (req, res) => {
+  const updatedSet = await Set.findOneAndUpdate(
+    { _id: req.params.id, user: req.user.id },
+    req.body,
+  );
+  res.status(200).json(updatedSet).end();
+});
+
 module.exports = setRouter;
