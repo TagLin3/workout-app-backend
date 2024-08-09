@@ -48,6 +48,7 @@ setRouter.put("/:id", async (req, res) => {
   const updatedSet = await Set.findOneAndUpdate(
     { _id: req.params.id, user: req.user.id },
     req.body,
+    { new: true },
   );
   res.status(200).json(updatedSet).end();
 });
