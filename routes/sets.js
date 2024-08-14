@@ -26,13 +26,13 @@ setRouter.post("/", async (req, res) => {
   const idsOfExercisesAvailableToUser = exercisesAvailableToUser
     .map((exercise) => exercise.toJSON().id);
   if (!(req.body.workout && req.body.exercise)) {
-    return res.status(400).json({ error: "set and workout are required fields" });
+    return res.status(400).json({ error: "Set and workout are required fields." });
   }
   if (!idsOfworkoutsAvailableToUser.includes(req.body.workout)) {
-    return res.status(401).json({ error: "you do not have access to this workout" });
+    return res.status(404).json({ error: "Workout not found or you don't have access to it." });
   }
   if (!idsOfExercisesAvailableToUser.includes(req.body.exercise)) {
-    return res.status(401).json({ error: "you do not have access to this exercise" });
+    return res.status(404).json({ error: "Exercise not found or you don't have access to it." });
   }
   const set = new Set({ ...req.body, user: req.user.id });
   const savedSet = await set.save();
@@ -41,7 +41,7 @@ setRouter.post("/", async (req, res) => {
 
 setRouter.delete("/:id", async (req, res) => {
   await Set.deleteOne({ _id: req.params.id, user: req.user.id });
-  res.status(204).end();
+  return res.status(204).end();
 });
 
 setRouter.put("/:id", async (req, res) => {
@@ -50,7 +50,10 @@ setRouter.put("/:id", async (req, res) => {
     req.body,
     { new: true },
   );
-  res.status(200).json(updatedSet).end();
+  if (!updatedSet) {
+    return res.status(404).json({ error: "Set not found or you don't have accesss to it." });
+  }
+  return res.status(200).json(updatedSet).end();
 });
 
 module.exports = setRouter;

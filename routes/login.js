@@ -8,13 +8,13 @@ loginRouter.post("/", async (req, res) => {
   const userToLogIn = await User.findOne({ username });
   if (!userToLogIn) {
     return res.status(401).json({
-      error: "username or password incorrect",
+      error: "Username and password don't match.",
     });
   }
   const passwordCorrect = await bcrypt.compare(password, userToLogIn.passwordHash);
   if (!passwordCorrect) {
     return res.status(401).json({
-      error: "username or password incorrect",
+      error: "Username and password don't match.",
     });
   }
   const expireHours = 10;
@@ -22,7 +22,11 @@ loginRouter.post("/", async (req, res) => {
     expiresIn: `${expireHours}h`,
   });
   return res.json({
-    token, username, name: userToLogIn.name, expiresAt: Date.now() + expireHours * 60 * 60 * 1000,
+    token,
+    username,
+    id: userToLogIn.id,
+    name: userToLogIn.name,
+    expiresAt: Date.now() + expireHours * 60 * 60 * 1000,
   });
 });
 

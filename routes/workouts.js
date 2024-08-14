@@ -16,7 +16,7 @@ workoutRouter.get("/:id", async (req, res) => {
       : undefined,
   });
   if (!workout) {
-    return res.status(404).json({ error: "workout not found" });
+    return res.status(404).json({ error: "Workout not found or you don't have access to it." });
   }
   if (req.query.includeSets !== undefined) {
     const sets = await Set.find({ workout: workout.id });
@@ -33,11 +33,11 @@ workoutRouter.post("/", async (req, res) => {
   const idsOfRoutinesAvailableToUser = routinesAvailableToUser
     .map((routine) => routine.toJSON().id);
   if (!idsOfRoutinesAvailableToUser.includes(req.body.routine)) {
-    return res.status(401).json({ error: "you do not have access to this routine" });
+    return res.status(401).json({ error: "Routine not found or you don't have access to it" });
   }
   const routineUsed = routinesAvailableToUser.find((routine) => routine.id === req.body.routine);
   if (!routineUsed.active) {
-    return res.status(400).json({ error: "you can't create a workout based on an inactive routine" });
+    return res.status(400).json({ error: "You can't create a workout based on an inactive routine." });
   }
   const workout = new Workout({
     routine: req.body.routine,

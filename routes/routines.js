@@ -24,7 +24,7 @@ routineRouter.get("/:id", async (req, res) => {
   const routine = await Routine.findOne({ _id: req.params.id, user: req.user.id })
     .populate("exercises.exercise");
   if (!routine) {
-    return res.status(404).json({ error: "routine not found" });
+    return res.status(404).json({ error: "Routine not found or you don't have access to it." });
   }
   return res.json(routine);
 });
@@ -38,7 +38,7 @@ routineRouter.post("/", async (req, res) => {
   if (exercisesUsedInRoutine.some(
     (exerciseId) => !idsOfExercisesAvailableToUser.includes(exerciseId),
   )) {
-    return res.status(401).json({ error: "you do not have access to use one or more of the exercises" });
+    return res.status(404).json({ error: "One or more of the exercises can't be found or you don't have access to them." });
   }
   const routine = new Routine({ ...req.body, user: req.user.id });
   const savedRoutine = await routine.save();
@@ -48,7 +48,7 @@ routineRouter.post("/", async (req, res) => {
 routineRouter.put("/:id/toggleActivity", async (req, res) => {
   const routineToUpdate = await Routine.findOne({ _id: req.params.id, user: req.user.id });
   if (!routineToUpdate) {
-    return res.status(404).json({ error: "routine not found" });
+    return res.status(404).json({ error: "Routine not found or you don't have access to it." });
   }
   await Routine.findByIdAndUpdate(req.params.id, {
     active: !routineToUpdate.active,
@@ -60,7 +60,7 @@ routineRouter.delete("/:id", async (req, res) => {
   const routineToDelete = await Routine.findOne({ _id: req.params.id, user: req.user.id });
   if (routineToDelete) {
     if (routineToDelete.active) {
-      return res.status(400).json({ error: "only inactive routines can be deleted" });
+      return res.status(400).json({ error: "Only inactive routines can be deleted." });
     }
     const workoutsToDeleteSetsFor = await Workout.find({ routine: req.params.id });
     await Promise.all(
