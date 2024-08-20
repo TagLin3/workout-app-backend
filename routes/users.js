@@ -3,6 +3,10 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 
 userRouter.get("/", async (req, res) => {
+  const admin = await User.findOne({ username: "admin" });
+  if (req.user.id !== admin.id) {
+    return res.status(401).json({ error: "Only administrators can access this route" });
+  }
   const users = await User.find({});
   return res.json(users);
 });

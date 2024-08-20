@@ -24,17 +24,21 @@ const errorHandler = (err, req, res, next) => {
 const authorizer = async (req, res, next) => {
   const pathsThatDontRequire = [
     {
-      path: "/api/login",
+      path: /\/api\/login/,
       method: "POST",
     },
     {
-      path: "/api/users",
+      path: /\/api\/users/,
+      method: "POST",
+    },
+    {
+      path: /\/api\/users\/.+\/changePassword/,
       method: "POST",
     },
   ];
   if (
     pathsThatDontRequire.some(
-      (path) => path.path === req.path && path.method === req.method,
+      (path) => path.path.test(req.path) && path.method === req.method,
     )
   ) {
     return next();
