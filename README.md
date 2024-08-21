@@ -1,3 +1,5 @@
+Frontend repository and work log at https://github.com/TagLin3/workout-app-frontend
+
 # Workout app backend documentation:
 
 ## the general idea
@@ -58,7 +60,8 @@ A workout is a single completion of a routine. For example, when you would do yo
 
 ```
 {
-  "routine": "(id of a routine)",
+  "id": "(id of the workout)"
+  "routine": "(id of the routine that the workout is based on)",
   "date": "2024-08-14T04:51:09.702+00:00",
   "user": "(id of the user that did the workout)"
 }
@@ -86,7 +89,7 @@ A set is a single completion of an exercise in a workout. For example, when you 
 
 #### drop sets
 
-Each drop set is saved as an individual set. Drop sets have the additional property of drop set number. Each drop set that is performed in a row have the same number but different drop set numbers. Drop set numbers also count up from 1.
+Each drop set is saved as an individual set. Drop sets have the additional field "dropSetNumber". Each drop set that is performed in a row has the same number but a different drop set number. Like regular set numbers, drop set numbers also count up from 1.
 
 ## routes
 
@@ -120,6 +123,8 @@ This route is used to log in. Format the request body in JSON and include your u
 
 ### /api/exercises
 
+All of the /api/exercises routes require the authorization header. Any user can look up exercises and see the default exercises available to everyone but the user associated with jwt token in the authorization header must always match the "user" field in the exercise if it is trying to be edited or deleted.
+
 #### GET /api/exercises
 
 Returns all of the exercises that are available to the user, formatted as a JSON list. Refer to [exercises](#exercises) to see how these are formatted. The returned exercises include the default exercises available to everyone and the exercises the user has created themselves.
@@ -128,21 +133,29 @@ Returns all of the exercises that are available to the user, formatted as a JSON
 
 Used to add a new exercise. The request body must be formatted in JSON and contain one field, "name", which contains the name of the new exercise. The "user" and "id" fields will be figured out by the server. This exercise will only be available to the user associated with the jwt token in the authorization header.
 
+#### PUT /api/exercises
+
+Used to edit a set. All fields of the set can be edited except for the "user" and "id" fields. Currently, this only leaves the "name" field to be edited. Returns the edited exercise.
+
+#### DELETE /api/exercises
+
+Used to delete an exercise. Deleting an exercise will delete all of the routines that use the exercise. This will in turn delete all of the workouts that are based on those routines which will also cause all of the sets done on those workouts to be deleted.
+
 ### /api/routines
 
 All of the /api/routines routes require the authorization header. The user associated with jwt token in the authorization header must alway match the "user" field in the routine that is trying to be looked up, edited or deleted.
 
 #### GET /api/routines
 
-Returns all of the workout routines, formatted as a JSON list. Refer to [workout routines](#workout-routines) to see how these are formatted. Can also include the query parameters `?inactiveOnly` and `?activeOnly` to only fetch routines that are active or inactive.
+Returns all of the user's workout routines, formatted as a JSON list. Refer to [workout routines](#workout-routines) to see how these are formatted. Can also include the query parameters `?inactiveOnly` and `?activeOnly` to only fetch routines that are active or inactive.
 
 #### GET /api/routines/:id
 
-Returns a single routine with the exercises populated. Similar to how the example routine at [workout routines](#workout-routines) is formatted, except for the exercises being populated with objects containing the name and id of the exercise used.
+Returns a single routine with the exercises populated. Similar to how the example routine at [workout routines](#workout-routines) is formatted, except for the exercises being populated with objects similar to the example exercise at [exercises](#exercises).
 
 #### POST /api/routines
 
-Used to add a routine. Request body must be formatted as a JSON closely resembling the example routine seen at [workout routines](#workout-routines). The exception being that when adding a routine, the "id" and "user" shouldn't be included at all and the "active" field is optional, with the default value being true.
+Used to add a routine. Request body must be formatted as a JSON closely resembling the example routine seen at [workout routines](#workout-routines) the exception being that when adding a routine, the "id" and "user" fields shouldn't be included at all and the "active" field is optional, with the default value being true. Also when creating a routine, users can only use exercises they have access to, ie. the default exercises accessible to everyone or the exercises they themselves have created.
 
 #### PUT /api/routines/:id/toggleActivity
 
@@ -150,26 +163,44 @@ Used to change the "active" status of a routine. Will always set the active stat
 
 #### DELETE /api/routines/:id
 
-Used to delete a routine.
+Used to delete a routine. Deleting a routine will also delete all the workouts based on it and all the sets done in those workouts.
 
 ### /api/workouts
 
+All of the /api/workouts routes require the authorization header. The user associated with jwt token in the authorization header must alway match the "user" field in the workout that is trying to be looked up or deleted.
+
 #### GET /api/workouts
+
+Returns all of the user's workouts, formatted as a JSON list. The workouts are formatted similarly to the example workout at [workouts](#workouts) except for the "routine" property being populated and containing the routine as an object.
 
 #### GET /api/workouts/:id
 
+Returns a single workout with the routine populated. Accepts query parameters ?inlcudeSets, ?includeExercises or both. The returned object is similar to the objects returned by [GET /api/workouts](#get-apiworkouts), except that if the query parameter ?includeExercises is present the exercises in the routine are populated similar to [GET /api/routines/:id](#get-apiroutinesid) and if the query parameter ?inclueSets is present the workout also contains a property "sets" that contains a list of all the sets completed in the workout. This list is similar to the result of [GET /api/sets](#get-apisets).
+
 #### POST /api/workouts
+
+Used to add a workout. Request body must be formatted as a JSON closely resembling the example workout seen at [workouts](#workouts) the exception being that when adding a workout, the "id" and "user" fields shouldn't be included at all and "date" is optional, with the default value being the date that the workout is saved to the db (ie. very close to the date of the request). A workout has to be based on a routine that the user has created and that is active.
 
 #### DELETE /api/workouts/:id
 
+Used to delete a workout. Deleting a workout also deletes all the sets done in that workout.
+
 ### /api/sets
+
+All of the /api/sets routes require the authorization header. The user associated with jwt token in the authorization header must alway match the "user" field in the set that is trying to be looked up, edited or deleted.
 
 #### GET /api/sets
 
+Returns all of the user's sets, formatted as a JSON list. The sets are formatted similarly to the example set at [sets](#sets) by default. Accepts query parameters ?inclueExercises, ?filterByExercise or both. In the precence of ?inluceExercises, the sets' "exercise" fields will be populated with exercise objects similar to the example exercise at [exercises](#exercises). Setting ?filterByExercise to the id of some exercise will return only the sets done on that exercise.
+
 #### POST /api/sets
+
+Used to add a set. Request body must be formatted as a JSON closely resembling the example set seen at [sets](#sets) the exception being that when adding a set, the "id" and "user" fields shouldn't be included at all, "note" is optional and "date" is optional, with the default value being the date that the set is saved to the db (ie. very close to the date of the request). Also when adding drop sets, set the field "dropSetNumber" to the proper value, as explained in [drop sets](#drop-sets). A set has to be done on a workout that the user has created.
 
 #### PUT /api/sets/:id
 
+Used to edit a set. All fields of the set can be edited except for the "user", "id", "workout" and "exercises" fields. Returns the edited set.
+
 #### DELETE /api/sets/:id
 
-Frontend repository and work log at https://github.com/TagLin3/workout-app-frontend
+Used to delete a set.

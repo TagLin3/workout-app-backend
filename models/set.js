@@ -14,18 +14,28 @@ const setSchema = new mongoose.Schema({
   number: {
     type: Number,
     required: true,
+    validate: {
+      validator: (number) => Number.isInteger(number) && number > 0,
+      message: "Error: Number should be above zero and an integer",
+    },
   },
   reps: {
     type: Number,
     required: true,
+    validate: {
+      validator: (number) => Number.isInteger(number) && number > 0,
+      message: "Error: Reps should be above zero and an integer",
+    },
   },
   weight: {
     type: Number,
     required: true,
+    min: [0, "Error: weight should be non-negative"],
   },
   rest: {
     type: Number,
     required: true,
+    min: [0, "Error: rest should be non-negative"],
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,

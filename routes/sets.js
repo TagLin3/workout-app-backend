@@ -45,15 +45,20 @@ setRouter.delete("/:id", async (req, res) => {
 });
 
 setRouter.put("/:id", async (req, res) => {
+  const {
+    user, date, type, number, reps, weight, rest, note,
+  } = req.body;
   const updatedSet = await Set.findOneAndUpdate(
     { _id: req.params.id, user: req.user.id },
-    req.body,
-    { new: true },
+    {
+      user, date, type, number, reps, weight, rest, note,
+    },
+    { new: true, runValidators: true },
   );
   if (!updatedSet) {
     return res.status(404).json({ error: "Set not found or you don't have accesss to it." });
   }
-  return res.status(200).json(updatedSet).end();
+  return res.status(200).json(updatedSet);
 });
 
 module.exports = setRouter;

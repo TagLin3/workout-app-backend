@@ -53,7 +53,7 @@ routineRouter.put("/:id/toggleActivity", async (req, res) => {
   await Routine.findByIdAndUpdate(req.params.id, {
     active: !routineToUpdate.active,
   });
-  return res.status(201).end();
+  return res.status(200).end();
 });
 
 routineRouter.delete("/:id", async (req, res) => {
