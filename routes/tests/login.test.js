@@ -9,7 +9,7 @@ const testHelpers = require("./testHelpers");
 const request = defaults(supertest(app));
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGODB_URI_TEST);
+  mongoose.connect(process.env.MONGODB_URI_TEST);
 });
 
 afterAll(async () => {

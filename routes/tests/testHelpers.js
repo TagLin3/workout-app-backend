@@ -16,6 +16,14 @@ const addUsersToDbAndGetTokens = async (usersToAdd) => {
   return tokens;
 };
 
+const getTokenByUsername = async (username) => {
+  const user = await User.findOne({ username });
+  const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
+    expiresIn: "10h",
+  });
+  return token;
+};
+
 const getTokenFromFirstUserInDb = async () => {
   const usersInDb = (await User.find({})).toSorted();
   const token = jwt.sign(usersInDb[0].toJSON(), process.env.JWT_SECRET, {
@@ -114,4 +122,5 @@ module.exports = {
   getUserByJwtToken,
   addSetToDb,
   createExpiredToken,
+  getTokenByUsername,
 };

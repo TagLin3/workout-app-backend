@@ -13,7 +13,7 @@ const Workout = require("../../models/workout");
 require("dotenv").config();
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGODB_URI_TEST);
+  mongoose.connect(process.env.MONGODB_URI_TEST);
 });
 
 afterAll(async () => {
@@ -175,9 +175,23 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
           exercise: exercises[0],
           workout: workoutNotAvailable.id,
         })
-        .expect(401);
+        .expect(404);
       const setsAtEnd = await Set.find({});
       expect(setsAtEnd.length).toBe(setsAtStart.length);
+    });
+    it("a PUT request to /api/sets/:id updates the corresponding set and returns the updated set", async () => {
+      const setToUpdate = await Set.findOne(
+        { user: (await testHelpers.getUserByJwtToken(tokens[0]))._id },
+      );
+      const res = await request
+        .put(`/api/sets/${setToUpdate.id}`)
+        .send({
+          weight: 1000,
+        })
+        .expect(200);
+      expect(res.body.weight).toBe(1000);
+      const setAtEnd = await Set.findById(setToUpdate.id);
+      expect(setAtEnd.weight).toBe(1000);
     });
     it("a DELETE request to /api/sets/:id deletes the corresponding set", async () => {
       const setToDelete = await Set.findOne(
@@ -291,7 +305,7 @@ describe("When there are users with user exercises, routines and workouts in the
           workout: workout.id,
           exercise: unavailableExercises[0].id,
         })
-        .expect(401);
+        .expect(404);
       const setsAtEnd = await Set.find({});
       expect(setsAtEnd.length).toBe(setsAtStart.length);
     });

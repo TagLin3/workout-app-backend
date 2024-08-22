@@ -16,7 +16,7 @@ const errorHandler = (err, req, res, next) => {
       .set("WWW-Authenticate", "Bearer")
       .json({ error: "Authorization token expired" });
   } else {
-    res.status(500).json({ error: "some unknown error occured" }).end();
+    res.status(500).json({ error: err.message }).end();
   }
   next(err);
 };

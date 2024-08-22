@@ -6,7 +6,7 @@ const User = require("../models/user");
 loginRouter.post("/", async (req, res) => {
   const { username, password } = req.body;
   const userToLogIn = await User.findOne({ username });
-  if (!userToLogIn) {
+  if (!userToLogIn || !password) {
     return res.status(401).json({
       error: "Username and password don't match.",
     });
@@ -21,7 +21,7 @@ loginRouter.post("/", async (req, res) => {
   const token = jwt.sign(userToLogIn.toJSON(), process.env.JWT_SECRET, {
     expiresIn: `${expireHours}h`,
   });
-  return res.json({
+  return res.status(200).json({
     token,
     username,
     id: userToLogIn.id,

@@ -9,7 +9,7 @@ const testHelpers = require("./testHelpers");
 const request = defaults(supertest(app));
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGODB_URI_TEST);
+  mongoose.connect(process.env.MONGODB_URI_TEST);
 });
 
 afterAll(async () => {
@@ -25,6 +25,7 @@ it("using an invalid authorization token for requests returns 401 unauthorized w
 });
 
 it("using an expired authorization token for requests returns 401 unauthorized with the correct error message", async () => {
+  await User.deleteMany({});
   const user = new User(testData.initialUsers[0]);
   const savedUser = await user.save();
   const expiredToken = await testHelpers.createExpiredToken(savedUser.toJSON());

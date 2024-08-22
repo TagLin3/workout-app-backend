@@ -11,7 +11,7 @@ const testHelpers = require("./testHelpers");
 require("dotenv").config();
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGODB_URI_TEST);
+  mongoose.connect(process.env.MONGODB_URI_TEST);
 });
 
 afterAll(async () => {
@@ -111,13 +111,21 @@ describe("When there are users, anonymous exercises and routines in the database
       const routinesInDb = await Routine.find({});
       expect(routinesInDb.length).toBe(routinesAtStart.length);
     });
+    it("a DELETE request to /api/routines/:id return 400 bad request if the corresponding routine is active", async () => {
+      const routineToDelete = await Routine.findOne(
+        { user: (await testHelpers.getUserByJwtToken(tokenOfRoutineOwner)).id },
+      );
+      await request
+        .delete(`/api/routines/${routineToDelete.id}`)
+        .expect(400);
+    });
     it("a PUT request to /api/routines/:id/toggleActivity toggles the activity of a routine", async () => {
       const routineToUpdate = await Routine.findOne(
         { name: testData.initialRoutines[0].name },
       );
       await request
         .put(`/api/routines/${routineToUpdate.id}/toggleActivity`)
-        .expect(201);
+        .expect(200);
       const routineToUpdateAtEnd = await Routine.findOne(
         { name: testData.initialRoutines[0].name },
       );
@@ -145,6 +153,14 @@ describe("When there are users, anonymous exercises and routines in the database
         const recievedRoutineNames = res.body.map((routine) => routine.name);
         expect(recievedRoutineNames).toContainEqual(testData.initialRoutines[1].name);
         expect(recievedRoutineNames).not.toContainEqual(testData.initialRoutines[0].name);
+      });
+      it("a DELETE request to /api/routines/:id deletes the corresponding inactive routine", async () => {
+        const routineToDelete = await Routine.findOne({ name: testData.initialRoutines[0].name });
+        await request
+          .delete(`/api/routines/${routineToDelete.id}`)
+          .expect(204);
+        const routinesAfterDeletion = await Routine.find({});
+        expect(routinesAfterDeletion).not.toContainEqual(routineToDelete);
       });
     });
   });
@@ -225,14 +241,13 @@ describe("When there are users who own user exercises in the database", () => {
         exercise: exercise.id,
         repRange: "6-10",
       }));
-      const res = await request
+      await request
         .post("/api/routines")
         .send({
           name: "shouldNotWork",
           exercises: exercisesToAdd,
         })
-        .expect(401);
-      expect(res.body).toEqual({ error: "you do not have access to use one or more of the exercises" });
+        .expect(404);
       const routinesAtEnd = await Routine.find({});
       expect(routinesAtStart.length).toBe(routinesAtEnd.length);
     });

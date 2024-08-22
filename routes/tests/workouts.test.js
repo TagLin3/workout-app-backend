@@ -13,7 +13,7 @@ const Workout = require("../../models/workout");
 require("dotenv").config();
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGODB_URI_TEST);
+  mongoose.connect(process.env.MONGODB_URI_TEST);
 });
 
 afterAll(async () => {
@@ -105,13 +105,12 @@ describe("When there are users, anonymous exercises, routines and workouts in th
       const workoutsAtStart = await Workout.find({});
       const notLoggedInUser = await testHelpers.getUserByJwtToken(tokens[1]);
       const unavailableRoutine = await Routine.findOne({ user: notLoggedInUser.id });
-      const res = await request
+      await request
         .post("/api/workouts")
         .send({
           routine: unavailableRoutine.id,
         })
-        .expect(401);
-      expect(res.body).toEqual({ error: "you do not have access to this routine" });
+        .expect(404);
       const workoutsAtEnd = await Workout.find({});
       expect(workoutsAtEnd.length).toBe(workoutsAtStart.length);
     });

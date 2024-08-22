@@ -4,7 +4,7 @@ const User = require("../models/user");
 
 userRouter.get("/", async (req, res) => {
   const admin = await User.findOne({ username: "admin" });
-  if (req.user.id !== admin.id) {
+  if (!admin || req.user.id !== admin.id) {
     return res.status(401).json({ error: "Only administrators can access this route" });
   }
   const users = await User.find({});
@@ -49,6 +49,9 @@ userRouter.put("/:id", async (req, res) => {
 userRouter.put("/:id/changePassword", async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const userToChangePasswordFor = await User.findById(req.params.id);
+  if (!userToChangePasswordFor) {
+    return res.status(404).json({ error: "User not found" });
+  }
   const passwordCorrect = await bcrypt.compare(oldPassword, userToChangePasswordFor.passwordHash);
   if (!passwordCorrect) {
     return res.status(401).json({ error: "Old password is incorrect" });

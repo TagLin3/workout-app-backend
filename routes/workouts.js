@@ -33,7 +33,7 @@ workoutRouter.post("/", async (req, res) => {
   const idsOfRoutinesAvailableToUser = routinesAvailableToUser
     .map((routine) => routine.toJSON().id);
   if (!idsOfRoutinesAvailableToUser.includes(req.body.routine)) {
-    return res.status(401).json({ error: "Routine not found or you don't have access to it" });
+    return res.status(404).json({ error: "Routine not found or you don't have access to it" });
   }
   const routineUsed = routinesAvailableToUser.find((routine) => routine.id === req.body.routine);
   if (!routineUsed.active) {

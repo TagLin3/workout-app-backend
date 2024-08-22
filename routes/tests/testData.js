@@ -1,21 +1,27 @@
 require("dotenv").config();
 const _ = require("lodash");
 
+const initialPasswords = [
+  "password1",
+  "password2",
+  "password3",
+];
+
 const initialUsers = [
   {
     name: "user1",
     username: "username1",
-    passwordHash: "$2a$10$ybgGsZKPwCooa02sMqLxreBNQJLzr4j4B4sDMXi0Yc1m1/Ugqj382",
+    passwordHash: "$2b$10$KXflHBKSjmjt3gnj/o/mOOlPHHJVzqsA6j6txJsWC0PwaxPbK6iE.",
   },
   {
     name: "user2",
     username: "username2",
-    passwordHash: "$2a$10$OlPuC8Q5oF8bCxhVD99Te.OWdbip2sntHiLK7Vh4oV3ldr5WTpRaO",
+    passwordHash: "$2b$10$er8U2QOGdC8GRpd8Md6EMeRIrW2uOWgR4IKkOnVg1ed0lnE8B3gjO",
   },
   {
     name: "user3",
     username: "username3",
-    passwordHash: "$2a$10$sMi8jT9g0UOBfd4EJBfiJuA0t5s4PA9RmGJO3QDamekiqzjAop7y.",
+    passwordHash: "$2b$10$wlfVN0vJhRq/BwZ2rAGTPOxjZg/LE3MZ7gWiFKZRY6cfpRnJpCgjm",
   },
 ];
 
@@ -117,6 +123,7 @@ module.exports = {
   initialAnonymousExercises,
   initialRoutines,
   initialUsers,
+  initialPasswords,
   initialUserExercisesForUser1,
   initialUserExercisesForUser2,
   initialSets,

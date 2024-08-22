@@ -19,7 +19,7 @@ exerciseRouter.post("/", async (req, res) => {
 });
 
 exerciseRouter.put("/:id", async (req, res) => {
-  const editedExercise = Exercise.findOneAndUpdate(
+  const editedExercise = await Exercise.findOneAndUpdate(
     { _id: req.params.id, user: req.user.id },
     { name: req.body.name },
     { new: true, runValidators: true },
@@ -27,7 +27,7 @@ exerciseRouter.put("/:id", async (req, res) => {
   if (!editedExercise) {
     return res.status(404).json({ error: "Exercise not found or you don't have accesss to it." });
   }
-  return res.status(200).json({ editedExercise });
+  return res.status(200).json(editedExercise);
 });
 
 exerciseRouter.delete("/:id", async (req, res) => {

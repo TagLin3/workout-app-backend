@@ -10,7 +10,7 @@ const User = require("../../models/user");
 require("dotenv").config();
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGODB_URI_TEST);
+  mongoose.connect(process.env.MONGODB_URI_TEST);
 });
 
 afterAll(async () => {
@@ -24,6 +24,7 @@ describe("When there are anonymous exercises in the database", () => {
   });
   describe("When logged in", () => {
     beforeAll(async () => {
+      await User.deleteMany({});
       const [token] = await testHelpers.addUsersToDbAndGetTokens([testData.initialUsers[0]]);
       request.set("Authorization", `Bearer ${token}`);
     });
@@ -94,6 +95,23 @@ describe("When there are users and user exercises in the database", () => {
       expect(returnedExercises).toContainEqual(testData.initialUserExercisesForUser1[1]);
       expect(returnedExercises).not.toContainEqual(testData.initialUserExercisesForUser2[0]);
       expect(returnedExercises).not.toContainEqual(testData.initialUserExercisesForUser2[1]);
+    });
+    it("a PUT request to /api/exercises updates the corresponding exercise and returns the updated exercise", async () => {
+      const exerciseToUpdate = await Exercise.findOne(
+        { user: (await testHelpers.getUserByJwtToken(tokens[0]))._id },
+      );
+      const res = await request
+        .put(`/api/exercises/${exerciseToUpdate.id}`)
+        .send({
+          name: "updatedName",
+        })
+        .expect(200);
+      expect(res.body.name).toBe("updatedName");
+      const exerciseAtEnd = await Exercise.findById(exerciseToUpdate.id);
+      expect(exerciseAtEnd.name).toBe("updatedName");
+    });
+    it("a DELETE request to /api/exercises/:id deletes the corresponding exercise", async () => {
+      // TODO
     });
   });
 });
