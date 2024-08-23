@@ -1,0 +1,2 @@
+GET http://localhost:3001/api/workouts/:id
+Authorization: Bearer REPLACETHISWITHYOURAUTHORIZATIONTOKEN

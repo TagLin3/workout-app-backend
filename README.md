@@ -2,11 +2,13 @@ Frontend repository and work log at https://github.com/TagLin3/workout-app-front
 
 # Workout app backend documentation:
 
-## the general idea
+This is the backend for my gym workout planning and logging application. It is used to plan workouts for completion in the gym and to track progress on different exercises.
 
-This is the backend for my gym workout planning and logging application. It is used to plan workouts for completion in the gym and used to track progress on different exercises.
+To run the application
 
-### exercises
+## Data types:
+
+### Exercises:
 
 Every user has access to the default public exercises as well as the exercises they themselves have created. For every exercise, the application currently only saves the name of the exercise. Exercise are referenced to in [workout routines](#workout-routines) and [sets](#sets). An exercise is of the following form:
 
@@ -18,7 +20,7 @@ Every user has access to the default public exercises as well as the exercises t
 }
 ```
 
-### workout routines
+### Workout routines:
 
 A workout routine, or simply a routine, is essentially just a collection of exercises with instructions on how to do them. For example, a routine could be a push day or an upped body day. Routines can be active, meaning you are actively completing new workouts based on it, or inactive, meaning you are not. This is indicated by the "active" field Routines are structured as objects that are of the following form:
 
@@ -54,7 +56,7 @@ A workout routine, or simply a routine, is essentially just a collection of exer
 
 Currently drop sets are the only form of intensity technique available.
 
-### workouts
+### Workouts:
 
 A workout is a single completion of a routine. For example, when you would do your push day, you would save that single workout as a "workout" in the application. A workout is of the following form:
 
@@ -67,7 +69,7 @@ A workout is a single completion of a routine. For example, when you would do yo
 }
 ```
 
-### sets
+### Sets:
 
 A set is a single completion of an exercise in a workout. For example, when you do 60 kg on the bench press for 12 reps in a row, you would save that as a single set. A set's number is used to determine the order of sets in a single exercise in a workout. The first set has the number 1, the second has 2 etc. Rest time is usually marked as rest after a set in seconds. For each set, a free-form note can also be saved. A regular set is of the following form:
 
@@ -87,11 +89,11 @@ A set is a single completion of an exercise in a workout. For example, when you 
 }
 ```
 
-#### drop sets
+#### Drop sets:
 
 Each drop set is saved as an individual set. Drop sets have the additional field "dropSetNumber". Each drop set that is performed in a row has the same number but a different drop set number. Like regular set numbers, drop set numbers also count up from 1.
 
-## routes
+## Routes:
 
 ### /api/users
 

@@ -111,7 +111,14 @@ describe("When there are users and user exercises in the database", () => {
       expect(exerciseAtEnd.name).toBe("updatedName");
     });
     it("a DELETE request to /api/exercises/:id deletes the corresponding exercise", async () => {
-      // TODO
+      const exerciseToDelete = await Exercise.findOne(
+        { user: (await testHelpers.getUserByJwtToken(tokens[0]))._id },
+      );
+      await request
+        .delete(`/api/exercises/${exerciseToDelete.id}`)
+        .expect(204);
+      const exercisesAtEnd = await Exercise.find({});
+      expect(exercisesAtEnd).not.toContainEqual(exerciseToDelete);
     });
   });
 });

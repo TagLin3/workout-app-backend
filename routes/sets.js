@@ -17,21 +17,22 @@ setRouter.get("/", async (req, res) => {
 });
 
 setRouter.post("/", async (req, res) => {
-  const workoutsAvailableToUser = await Workout
-    .find({ user: req.user.id });
-  const idsOfworkoutsAvailableToUser = workoutsAvailableToUser
-    .map((workout) => workout.toJSON().id);
-  const exercisesAvailableToUser = await Exercise
-    .find({ $or: [{ user: req.user.id }, { user: undefined }] });
-  const idsOfExercisesAvailableToUser = exercisesAvailableToUser
-    .map((exercise) => exercise.toJSON().id);
-  if (!(req.body.workout && req.body.exercise)) {
-    return res.status(400).json({ error: "Set and workout are required fields." });
+  if (!req.body.workout || !req.body.exercise) {
+    return res.status(400).json({ error: "Workout and exercise are required fields" });
   }
-  if (!idsOfworkoutsAvailableToUser.includes(req.body.workout)) {
+  const workoutOfSet = await Workout.findOne({ _id: req.body.workout, user: req.user.id });
+  const exerciseOfSet = await Exercise.findOne(
+    {
+      $or: [
+        { _id: req.body.exercise, user: req.user.id },
+        { _id: req.body.exercise, user: undefined },
+      ],
+    },
+  );
+  if (!workoutOfSet) {
     return res.status(404).json({ error: "Workout not found or you don't have access to it." });
   }
-  if (!idsOfExercisesAvailableToUser.includes(req.body.exercise)) {
+  if (!exerciseOfSet) {
     return res.status(404).json({ error: "Exercise not found or you don't have access to it." });
   }
   const set = new Set({ ...req.body, user: req.user.id });

@@ -1,0 +1,12 @@
+POST http://localhost:3001/api/sets
+Content-Type: application/json
+Authorization: Bearer REPLACETHISWITHYOURAUTHORIZATIONTOKEN
+
+{
+  "number": 1,
+  "reps": 8,
+  "weight": 15,
+  "rest": 120,
+  "exercise": "(exercise id goes here)",
+  "workout": "(workout id goes here)"
+}

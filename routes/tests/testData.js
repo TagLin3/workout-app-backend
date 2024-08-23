@@ -102,6 +102,7 @@ const initialSets = [
     weight: 60,
     rest: 120,
     note: "testnote",
+    type: "regular",
   },
   {
     number: 1,
@@ -109,6 +110,7 @@ const initialSets = [
     weight: 20,
     rest: 120,
     note: "testnote2",
+    type: "regular",
   },
   {
     number: 1,
@@ -116,6 +118,7 @@ const initialSets = [
     weight: 60,
     rest: 120,
     note: "testnote3",
+    type: "regular",
   },
 ];
 

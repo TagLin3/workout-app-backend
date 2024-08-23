@@ -94,6 +94,7 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
     it("a GET request to /api/sets returns the sets completed by the logged in user but not any other sets", async () => {
       const res = await request.get("/api/sets").expect(200);
       const recievedSets = res.body.map((set) => ({
+        type: set.type,
         number: set.number,
         weight: set.weight,
         reps: set.reps,
@@ -110,6 +111,7 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
         .get(`/api/sets?filterByExercise=${exercises[0].id}`)
         .expect(200);
       const recievedSets = res.body.map((set) => ({
+        type: set.type,
         number: set.number,
         weight: set.weight,
         reps: set.reps,
@@ -172,12 +174,47 @@ describe("When there are users, anonymous exercises, routines, workouts and sets
         .post("/api/sets")
         .send({
           ...testData.initialSets[0],
-          exercise: exercises[0],
+          exercise: exercises[0].id,
           workout: workoutNotAvailable.id,
         })
         .expect(404);
       const setsAtEnd = await Set.find({});
       expect(setsAtEnd.length).toBe(setsAtStart.length);
+    });
+    it("a set with invalid reps, weight or rest can't be added", async () => {
+      const loggedInUser = await testHelpers.getUserByJwtToken(tokens[0]);
+      const workout = await Workout.findOne({ user: loggedInUser.id });
+      const exercise = await Exercise.findOne({});
+      const res1 = await request
+        .post("/api/sets")
+        .send({
+          ...testData.initialSets[0],
+          workout: workout.id,
+          exercise: exercise.id,
+          weight: -1,
+        })
+        .expect(400);
+      const res2 = await request
+        .post("/api/sets")
+        .send({
+          ...testData.initialSets[0],
+          workout: workout.id,
+          exercise: exercise.id,
+          reps: 0.5,
+        })
+        .expect(400);
+      const res3 = await request
+        .post("/api/sets")
+        .send({
+          ...testData.initialSets[0],
+          workout: workout.id,
+          exercise: exercise.id,
+          rest: -1,
+        })
+        .expect(400);
+      expect(res1.body.error).toBe("Set validation failed: weight: Should be non-negative");
+      expect(res2.body.error).toBe("Set validation failed: reps: Should be above zero and an integer");
+      expect(res3.body.error).toBe("Set validation failed: rest: Should be non-negative");
     });
     it("a PUT request to /api/sets/:id updates the corresponding set and returns the updated set", async () => {
       const setToUpdate = await Set.findOne(

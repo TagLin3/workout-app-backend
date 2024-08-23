@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/exercises/:id
+Content-Type: application/json
+Authorization: Bearer REPLACETHISWITHYOURAUTHORIZATIONTOKEN
+
+{
+  "name": "renamedExercise"
+}

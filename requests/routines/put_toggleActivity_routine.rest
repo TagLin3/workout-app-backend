@@ -1,0 +1,2 @@
+PUT http://localhost:3001/api/routines/:id
+Authorization: Bearer REPLACETHISWITHYOURAUTHORIZATIONTOKEN

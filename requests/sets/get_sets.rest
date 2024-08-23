@@ -1,0 +1,2 @@
+GET http://localhost:3001/api/sets?filterByExercise=:id&populateExercises
+Authorization: Bearer REPLACETHISWITHYOURAUTHORIZATIONTOKEN

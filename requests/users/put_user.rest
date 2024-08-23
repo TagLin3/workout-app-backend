@@ -1,0 +1,8 @@
+PUT http://localhost:3001/api/users/:id
+Content-Type: application/json
+Authorization: Bearer REPLACETHISWITHYOURAUTHORIZATIONTOKEN
+
+{
+  "username": "updatedUsername",
+  "name": "updatedName"
+}

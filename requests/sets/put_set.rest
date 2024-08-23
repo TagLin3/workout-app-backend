@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/sets/:id
+Content-Type: application/json
+Authorization: Bearer REPLACETHISWITHYOURAUTHORIZATIONTOKEN
+
+{
+  "note": "this note has been updated"
+}

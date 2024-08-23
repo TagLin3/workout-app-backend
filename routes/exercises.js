@@ -31,7 +31,7 @@ exerciseRouter.put("/:id", async (req, res) => {
 });
 
 exerciseRouter.delete("/:id", async (req, res) => {
-  const exerciseToDelete = await Exercise.findOne({ _id: req.params.id, user: req.params.user });
+  const exerciseToDelete = await Exercise.findOne({ _id: req.params.id, user: req.user.id });
   if (exerciseToDelete) {
     const routinesAvailableToUser = await Routine.find({ user: req.params.user });
     const routinesToDelete = routinesAvailableToUser.filter((routine) => {
@@ -44,6 +44,7 @@ exerciseRouter.delete("/:id", async (req, res) => {
       routinesToDelete.map((routine) => Workout.deleteMany({ routine: routine.id })),
     );
     await Set.deleteMany({ exercise: req.params.id });
+    await Exercise.findByIdAndDelete(exerciseToDelete.id);
   }
   return res.status(204).end();
 });
