@@ -33,7 +33,7 @@ const authorizer = async (req, res, next) => {
     },
     {
       path: /\/api\/users\/.+\/changePassword/,
-      method: "POST",
+      method: "PUT",
     },
   ];
   if (
@@ -55,7 +55,7 @@ const authorizer = async (req, res, next) => {
   return res
     .status(401)
     .set("WWW-Authenticate", "Bearer")
-    .json({ error: "authorization header missing" });
+    .json({ error: "Authorization header missing" });
 };
 
 module.exports = { errorHandler, authorizer };

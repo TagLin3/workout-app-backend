@@ -20,6 +20,9 @@ userRouter.get("/:id", async (req, res) => {
 });
 
 userRouter.post("/", async (req, res) => {
+  if (req.body.password.length < 1) {
+    return res.status(400).json({ error: "Minimum length for a password is 1 character" });
+  }
   const passwordHash = await bcrypt.hash(req.body.password, 10);
   const user = new User({
     username: req.body.username,
@@ -48,6 +51,9 @@ userRouter.put("/:id", async (req, res) => {
 
 userRouter.put("/:id/changePassword", async (req, res) => {
   const { oldPassword, newPassword } = req.body;
+  if (newPassword.length < 1) {
+    return res.status(400).json({ error: "Minimum length for a password is 1 character" });
+  }
   const userToChangePasswordFor = await User.findById(req.params.id);
   if (!userToChangePasswordFor) {
     return res.status(404).json({ error: "User not found" });
