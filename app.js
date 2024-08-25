@@ -43,9 +43,9 @@ app.use("*", (req, res) => {
   }
   if (req.baseUrl.startsWith("/assets/")) {
     const fileName = req.baseUrl.slice(8);
-    return res.sendFile(path.join(__dirname, "../dist/assets/", fileName));
+    return res.sendFile(path.join(__dirname, "./dist/assets/", fileName));
   }
-  return res.sendFile(path.join(__dirname, "../dist", "index.html"));
+  return res.sendFile(path.join(__dirname, "./dist", "index.html"));
 });
 
 app.use(errorHandler);
