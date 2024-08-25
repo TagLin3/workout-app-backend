@@ -33,15 +33,17 @@ exerciseRouter.put("/:id", async (req, res) => {
 exerciseRouter.delete("/:id", async (req, res) => {
   const exerciseToDelete = await Exercise.findOne({ _id: req.params.id, user: req.user.id });
   if (exerciseToDelete) {
-    const routinesAvailableToUser = await Routine.find({ user: req.params.user });
-    const routinesToDelete = routinesAvailableToUser.filter((routine) => {
-      if (routine.exercises.some((exerciseId) => exerciseId === req.params.id)) {
-        return true;
-      }
-      return false;
-    });
+    const routinesAvailableToUser = await Routine.find({ user: req.user.id });
+    const routinesToDelete = routinesAvailableToUser.filter(
+      (routine) => (routine.exercises.some(
+        (exercise) => exercise.exercise.toString() === req.params.id,
+      )),
+    );
     await Promise.all(
       routinesToDelete.map((routine) => Workout.deleteMany({ routine: routine.id })),
+    );
+    await Promise.all(
+      routinesToDelete.map((routine) => Routine.findByIdAndDelete(routine.id)),
     );
     await Set.deleteMany({ exercise: req.params.id });
     await Exercise.findByIdAndDelete(exerciseToDelete.id);

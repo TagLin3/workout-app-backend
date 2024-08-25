@@ -1,2 +1,2 @@
-PUT http://localhost:3001/api/routines/:id
+PUT http://localhost:3001/api/routines/:id/toggleActivity
 Authorization: Bearer REPLACETHISWITHYOURAUTHORIZATIONTOKEN

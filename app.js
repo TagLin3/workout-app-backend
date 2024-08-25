@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("express-async-errors");
 const morgan = require("morgan");
+const path = require("path");
 const logger = require("./utils/logger");
 const routineRouter = require("./routes/routines");
 const exerciseRouter = require("./routes/exercises");
@@ -11,7 +12,6 @@ const setRouter = require("./routes/sets");
 const workoutRouter = require("./routes/workouts");
 const userRouter = require("./routes/users");
 const loginRouter = require("./routes/login");
-const distRouter = require("./routes/dist");
 const { errorHandler, authorizer } = require("./utils/middleware");
 
 if (process.env.NODE_ENV === "development") {
@@ -37,7 +37,16 @@ app.use("/api/sets", setRouter);
 app.use("/api/workouts", workoutRouter);
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
-app.use("*", distRouter);
+app.use("*", (req, res) => {
+  if (req.baseUrl.startsWith("/api")) {
+    return res.status(404).json({ error: "API route not found" });
+  }
+  if (req.baseUrl.startsWith("/assets/")) {
+    const fileName = req.baseUrl.slice(8);
+    return res.sendFile(path.join(__dirname, "../dist/assets/", fileName));
+  }
+  return res.sendFile(path.join(__dirname, "../dist", "index.html"));
+});
 
 app.use(errorHandler);
 
