@@ -39,7 +39,7 @@ const authorizer = async (req, res, next) => {
   if (
     pathsThatDontRequire.some(
       (path) => path.path.test(req.path) && path.method === req.method,
-    )
+    ) || !req.path.startsWith("/api")
   ) {
     return next();
   }

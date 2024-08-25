@@ -1,10 +1,22 @@
-Frontend repository and work log at https://github.com/TagLin3/workout-app-frontend
-
-# Workout app backend documentation:
+# Workout app backend
 
 This is the backend for my gym workout planning and logging application. It is used to plan workouts for completion in the gym and to track progress on different exercises.
 
-To run the application
+Instructions for using the frontend as well as the work log can be found at https://github.com/TagLin3/workout-app-frontend
+
+## Running the application locally (in production mode):
+
+1. Check out .env.template for configuring your .env file before running the application.
+
+2. Ensure that the backend and frontend directories are in the same root directory, eg. the frontend is at /workoutApp/frontend and the backend is at /workoutApp/backend.
+
+3. In the backend directory, run `npm run build:ui`, `npm install` and `npm start`.
+
+4. The application should be running. The API routes are accessible at /api/\* and the frontend is accessible at /. If you have VS Code with the VS Code REST client extension installed, you can use the API through the .rest files in the requests folder. There is a .rest file ready configured for every route.
+
+To run the automated tests for backend routes, run `npm test` in the backend directory.
+
+# Instructions for using the API:
 
 ## Data types:
 
